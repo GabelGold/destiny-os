@@ -1,33 +1,65 @@
 #!/usr/bin/env python3
+"""
+Destiny Updater – nur explizit, kein stiller Perioden-Pull.
+"""
+
+import argparse
 import subprocess
-import time
+import sys
 
 from destiny_paths import DestinyPaths
 
 
-def pull_once() -> bool:
-    """Pull only if this install is a git checkout. Returns True if pull ran."""
+def update(force: bool = False) -> bool:
+    """Führt git pull aus, wenn .git existiert."""
     root = DestinyPaths.root()
     if not DestinyPaths.has_git():
-        print(f"Kein .git unter {root} – git pull übersprungen.")
+        print(f"Kein Git-Repository unter {root}")
         return False
-    result = subprocess.run(
-        ["git", "-C", str(root), "pull"],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        print(f"git pull fehlgeschlagen: {result.stderr.strip()}")
+    cmd = ["git", "-C", str(root), "pull"]
+    if force:
+        cmd.append("--ff-only")
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True)
+    except Exception as exc:
+        print(f"Update fehlgeschlagen: {exc}")
         return False
-    print(result.stdout.strip() or "git pull ok")
-    return True
+    if result.stdout.strip():
+        print(result.stdout.strip())
+    if result.stderr.strip():
+        print(result.stderr.strip())
+    return result.returncode == 0
 
 
-def main():
-    while True:
-        pull_once()
-        time.sleep(1800)
+def status() -> int:
+    root = DestinyPaths.root()
+    if not DestinyPaths.has_git():
+        print(f"Kein Git-Repository unter {root}")
+        return 1
+    result = subprocess.run(["git", "-C", str(root), "status", "-sb"])
+    return result.returncode
+
+
+def pull_once() -> bool:
+    """Kompatibilität: kein Loop, ein expliziter Pull."""
+    return update()
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description="Destiny Updater (explizit)")
+    parser.add_argument("--update", action="store_true", help="Fuehrt git pull aus")
+    parser.add_argument("--status", action="store_true", help="Zeigt Git-Status")
+    parser.add_argument("--force", action="store_true", help="git pull --ff-only")
+    args = parser.parse_args(argv)
+
+    if args.update:
+        return 0 if update(force=args.force) else 1
+    if args.status:
+        return status()
+    print("Verwendung: python destiny_updater.py --update")
+    print("            python destiny_updater.py --status")
+    return 2
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
