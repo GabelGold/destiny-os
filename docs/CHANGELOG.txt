@@ -1,6 +1,21 @@
 DESTINY OS – CHANGELOG
 ======================
 
+[1.2.0] – 2026-08-13 – Sprint B Services
+----------------------------------------
+Added
+  - Session-Listener-Daemon (watchdog-Observer, Polling-Fallback, incoming/)
+  - destiny_service_manager.py (start/stop/status/list, PID-Dateien)
+  - install_nssm_windows.ps1 (Download nach tools/nssm, -RegisterServices)
+  - Commander-HTTP auf 127.0.0.1:8765 (/health, /status, POST /command)
+  - Backup-Kopie destiny_backups/latest
+  - Power Center: Task Scheduler + NSSM-Hooks
+
+Changed
+  - Updater nur noch mit --update / --status, kein 30-Minuten-Loop
+  - Watchdog: Health je Dienst, max. 3 Restarts / 300s, Backoff
+  - DestinyManager.status() liefert Service-Snapshot
+
 [1.1.0] – 2026-08-13 – Sprint A Portabilitaet
 ---------------------------------------------
 Added

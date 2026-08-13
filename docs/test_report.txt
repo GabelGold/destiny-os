@@ -1,34 +1,28 @@
 DESTINY OS – TESTREPORT
 =======================
-Datum:     13. August 2026 (Sprint A)
+Datum:     13. August 2026 (Sprint B)
 Host:      Windows, Python 3.11.15
-Werkzeug:  tools/live_check.py
 Ergebnis:  BESTANDEN (Exit 0)
 
-1. STRUKTUR
+1. LIVE-CHECK
+-------------
+  26 Python-Module, 6 Docs, 5 Web-Dateien
+  Imports inkl. service_manager, watchdog, commander: OK
+  Hardcoded-Path-Scan: keine Treffer
+
+2. SERVICES
 -----------
-  src/     OK   25 .py Dateien (inkl. destiny_paths.py)
-  docs/    OK   6 Dokumente
-  web/     OK   5 Kern-Dateien
-  tools/   OK   live_check.py
-  Root     OK   start_destiny_windows.bat vorhanden
+  destiny_updater.py ohne Flag     Exit 2 (Hilfe, kein Pull)
+  destiny_updater.py --status      Exit 0
+  destiny_service_manager.py list  alle STOPPED (erwartet, nichts gestartet)
+  status core                      STOPPED
+  Watchdog.check_health(core)      OK (Manager-Health)
+  SessionListener record + incoming-Datei  OK
+  rotate_backups + latest/         OK
 
-2. SYNTAX / IMPORTS
--------------------
-  25/25 ast.parse bestanden
-  SAFE_IMPORTS inkl. destiny_paths, backup, watchdog, power_center, updater: OK
-
-3. SMOKE
---------
-  DestinyPaths.root()           I:\Offline Survival System Emulator\DESTINY-OS_PROD
-  DestinyPaths.disk_root()      I:\
-  rotate_backups(..., 5)        OK
-  Manager.initialize/health     OK
-  Layer SQLite                  OK
-  Hardcoded-Path-Scan src+sh    keine Treffer (/home/christians, /media/christians)
-
-4. NICHT GETESTET
------------------
-  Streamlit/Flask im Browser
-  systemd unter Linux
-  start_destiny_windows.bat als laufender Multi-Prozess-Test
+3. NICHT AUSGEFUEHRT (absichtlich)
+----------------------------------
+  install_nssm_windows.ps1 -RegisterServices  (wuerde Systemdienste anlegen)
+  schtasks /Create                            (keine stillen Autostart-Tasks)
+  Watchdog.run() / Streamlit-GUI Dauerbetrieb
+  git pull --update

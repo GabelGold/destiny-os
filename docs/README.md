@@ -31,6 +31,8 @@ cd "I:\Offline Survival System Emulator\DESTINY-OS_PROD"
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+python src\destiny_service_manager.py list
+python src\destiny_updater.py --status
 python tools\live_check.py
 ```
 

@@ -48,4 +48,12 @@ WARNUNGEN (nicht blockierend)
 [2026-08-13 21:02:00] TEST   live_check + rotate_backups + DestinyPaths.root
 [2026-08-13 21:02:00] OK     Live-Check Exit 0, 25 py, keine Eprimo-/christians-Pfade
 
-ENDE Sprint A.
+[2026-08-13 21:08:00] START Sprint B Services
+[2026-08-13 21:08:30] OK     Session-Listener Daemon + incoming/
+[2026-08-13 21:08:40] OK     Updater nur --update/--status
+[2026-08-13 21:09:00] OK     Watchdog Limits + Service Manager
+[2026-08-13 21:09:20] OK     Power Center NSSM/schtasks, Commander HTTP
+[2026-08-13 21:09:40] OK     install_nssm_windows.ps1 (ohne Register)
+[2026-08-13 21:10:14] TEST   live_check Exit 0, 26 py
+
+ENDE Sprint B.

@@ -1,7 +1,7 @@
 DESTINY OS – PROJEKTSTATUS
 ==========================
 Stand:            13. August 2026
-Version:          1.0.0 (Produktkern, neu strukturiert auf Laufwerk I:)
+Version:          1.2.0 (Sprint A Portabilitaet + Sprint B Services)
 Entwickler:       Christian Schmitt
 Projektordner:    I:\Offline Survival System Emulator\DESTINY-OS_PROD\
 

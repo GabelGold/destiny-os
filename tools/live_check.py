@@ -41,6 +41,7 @@ EXPECTED_PY = [
     "destiny_monitor.py",
     "destiny_power_center.py",
     "destiny_provisioner.py",
+    "destiny_service_manager.py",
     "destiny_session_listener.py",
     "destiny_setup.py",
     "destiny_sorter.py",
@@ -80,6 +81,7 @@ EXPECTED_ROOT = [
     "install_destiny_all.sh",
     "create_destiny_structure.ps1",
     "start_destiny_windows.bat",
+    "install_nssm_windows.ps1",
 ]
 
 HASH_TARGETS = [
@@ -107,6 +109,7 @@ SAFE_IMPORTS = [
     "destiny_updater",
     "destiny_update_engine",
     "destiny_commander",
+    "destiny_service_manager",
 ]
 
 SYSTEMD_SERVICES = [
@@ -233,13 +236,71 @@ def run_paths_smoke() -> dict:
         return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
 
 
+def run_updater_smoke() -> dict:
+    try:
+        from destiny_updater import main as updater_main
+
+        code = updater_main(["--status"])
+        return {"ok": code == 0, "exit": code}
+    except Exception as exc:
+        return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+
+
+def run_service_manager_smoke() -> dict:
+    try:
+        from destiny_service_manager import DestinyServiceManager
+
+        mgr = DestinyServiceManager()
+        snap = mgr.snapshot()
+        return {"ok": "core" in snap and "gui" in snap, "services": list(snap)}
+    except Exception as exc:
+        return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+
+
+def run_listener_smoke() -> dict:
+    try:
+        from destiny_session_listener import DestinySessionListener, SessionHandler
+        from destiny_archiver import DestinyChatSorterPro
+        from destiny_paths import DestinyPaths
+
+        DestinyPaths.ensure()
+        listener = DestinySessionListener()
+        stored = listener.record_snippet("Sprint B listener smoke", project="session")
+        incoming = DestinyPaths.incoming()
+        probe = incoming / "live_check_probe.txt"
+        probe.write_text("Sprint B incoming probe", encoding="utf-8")
+        handled = SessionHandler(DestinyChatSorterPro()).process_file(probe)
+        return {
+            "ok": stored is not None and handled is not None,
+            "snippet": str(stored),
+            "incoming": str(handled),
+        }
+    except Exception as exc:
+        return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+
+
+def run_watchdog_smoke() -> dict:
+    try:
+        from destiny_watchdog import DestinyWatchdog, health_check
+
+        wd = DestinyWatchdog()
+        core_ok = wd.check_health("core")
+        overall = health_check()
+        return {"ok": core_ok and overall, "core": core_ok, "overall": overall}
+    except Exception as exc:
+        return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+
+
 def run_backup_rotate_smoke() -> dict:
     try:
         from destiny_backup_agent import rotate_backups
         from destiny_paths import DestinyPaths
 
         rotate_backups(DestinyPaths.backup(), 5)
-        return {"ok": True, "backup": str(DestinyPaths.backup())}
+        from destiny_backup_agent import refresh_latest
+
+        latest = refresh_latest(DestinyPaths.archive(), DestinyPaths.backup())
+        return {"ok": True, "backup": str(DestinyPaths.backup()), "latest": str(latest) if latest else None}
     except Exception as exc:
         return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
 
@@ -320,6 +381,10 @@ def main() -> int:
     report["checks"]["layer_smoke"] = run_layer_smoke()
     report["checks"]["paths_smoke"] = run_paths_smoke()
     report["checks"]["backup_rotate"] = run_backup_rotate_smoke()
+    report["checks"]["updater"] = run_updater_smoke()
+    report["checks"]["service_manager"] = run_service_manager_smoke()
+    report["checks"]["listener"] = run_listener_smoke()
+    report["checks"]["watchdog"] = run_watchdog_smoke()
     report["checks"]["hardcoded_paths"] = scan_hardcoded_paths()
     report["checks"]["systemd_services_documented"] = SYSTEMD_SERVICES
 
@@ -356,6 +421,9 @@ def main() -> int:
         failures.append({"group": "backup_rotate", **report["checks"]["backup_rotate"]})
     if not report["checks"]["hardcoded_paths"]["ok"]:
         failures.append({"group": "hardcoded_paths", **report["checks"]["hardcoded_paths"]})
+    for extra in ("updater", "service_manager", "listener", "watchdog"):
+        if not report["checks"][extra]["ok"]:
+            failures.append({"group": extra, **report["checks"][extra]})
 
     finished = datetime.now(timezone.utc)
     report["finished_utc"] = finished.isoformat()

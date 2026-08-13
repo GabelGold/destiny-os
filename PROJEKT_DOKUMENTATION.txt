@@ -2,7 +2,7 @@
 PROJEKT_DOKUMENTATION – DESTINY OS
 ================================================================================
 PROJEKTNAME:     Destiny OS
-VERSION:         1.1.0
+VERSION:         1.2.0
 ENTWICKLER:      Christian Schmitt
 STAND:           13. August 2026
 LAUFWERK:        I:
@@ -100,9 +100,9 @@ Diese Datei ist die Zusammenfassung zum Hochladen / zur Überprüfung.
   [x] Hardcodierte Linux-Pfade entfernt (Sprint A)
   [x] Backup-Rotation (max. 5)
   [x] Watchdog nur bei echtem Fehler neu starten
-  [ ] Session-Listener als echter Daemon (Sprint B)
-  [ ] Updater nur explizit, nie stiller git pull (Sprint B)
-  [ ] Persistente Windows-Tasks / NSSM (Sprint B)
+  [x] Session-Listener als Daemon (Sprint B)
+  [x] Updater nur explizit (--update)
+  [x] Persistenz: Task Scheduler / NSSM-Skript (nicht still installiert)
   [ ] Eine UI als kanonisch festlegen (Streamlit oder Flask)
   [ ] Archiver-Formate vereinheitlichen
   [ ] Session-Listener als echten Dienst oder aus Installer nehmen

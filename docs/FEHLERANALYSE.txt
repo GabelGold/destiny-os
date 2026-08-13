@@ -50,8 +50,7 @@ P1-7  Zwei Archiver                 DestinyChatSorterPro (destiny_archiver.py) u
 
 P1-8  autoinstall.sh                BEHOBEN Sprint A: SCRIPT_DIR / $HOME / .venv / src/
 
-P1-9  install_destiny_all.sh        BEHOBEN Sprint A: venv wird angelegt, Dienste zeigen
-                                    auf src/. Listener ohne Daemon-Loop bleibt Sprint B.
+P1-9  install_destiny_all.sh        BEHOBEN Sprint A/B: venv + src/. Listener ist Daemon.
 
 P1-10 iso/                          Leer. Kein bootfähiges Destiny-ISO vorhanden.
 
@@ -75,8 +74,7 @@ P2-6  datetime.utcnow()             deprecated in Python 3.12+ (manager, provisi
 
 P2-7  Keine Tests                   test_report.txt basiert auf Live-Check, nicht pytest.
 
-P2-8  GitHub-Remote                 https://github.com/deinname/destiny-os ist Platzhalter.
-                                    Kein Push.
+P2-8  GitHub-Remote                 BEHOBEN: https://github.com/GabelGold/destiny-os
 
 P2-9  LICENSE-Konflikt              GoldGabel-Stick ist kommerziell lizenziert.
                                     DESTINY-OS_PROD nutzt eine eigene Proprietär-Lizenz
@@ -95,10 +93,12 @@ Sprint A – Portabilität (Windows + I:)
   [x] start_destiny_windows.bat
 
 Sprint B – Services
-  [ ] Session-Listener als echter Daemon oder aus dem Installer nehmen
-  [ ] Watchdog nur bei fehlgeschlagenem Health-Check neu starten
-  [ ] Backup: Rotation (max. N Kopien) + eine laufende Kopie
-  [ ] Updater: nur explizit, nie stiller git pull
+  [x] Session-Listener als Daemon (incoming/ + File-Watcher)
+  [x] Watchdog: Health je Dienst, Restart-Limit, Backoff
+  [x] Backup: Rotation + latest/
+  [x] Updater nur explizit (--update)
+  [x] Service Manager start/stop/status/list
+  [x] Windows Persistenz: schtasks + NSSM (Installer, nicht still installiert)
 
 Sprint C – GUI / eine Oberfläche
   [ ] Eine UI wählen (Streamlit ODER Flask), die andere als Redirect
@@ -109,7 +109,7 @@ Sprint C – GUI / eine Oberfläche
 Sprint D – Qualität
   [ ] pytest für Archiver, Sorter, Layer, Manager
   [ ] live_check.py in CI / vor jedem Commit
-  [ ] Echten GitHub-Remote setzen
+  [x] GitHub-Remote GabelGold/destiny-os
   [ ] Optional: ISO-Build-Skript – nur wenn wirklich ein Live-System gebaut wird
 
 
