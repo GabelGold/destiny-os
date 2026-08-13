@@ -6,21 +6,22 @@ Destiny Manager
 - wird von GUI und Services angesprochen
 """
 
-from pathlib import Path
 from datetime import datetime
 import json
+import time
 
+from destiny_paths import DestinyPaths
 from destiny_provisioner import DestinyProvisioner
 from destiny_archiver import DestinyChatSorterPro
 
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = DestinyPaths.src()
 
 
 class DestinyManager:
 
     def __init__(self):
-        self.state_file = BASE_DIR / "memory" / "system_state.json"
+        self.state_file = DestinyPaths.state_file()
         self.last_status = {}
 
         # Module initialisieren
@@ -119,3 +120,12 @@ class DestinyManager:
         self._write_state(result)
 
         return result
+
+
+if __name__ == "__main__":
+    DestinyPaths.ensure()
+    mgr = DestinyManager()
+    print(mgr.initialize())
+    while True:
+        print(mgr.health_check())
+        time.sleep(30)

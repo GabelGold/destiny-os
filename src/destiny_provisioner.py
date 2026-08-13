@@ -11,9 +11,11 @@ from pathlib import Path
 import json
 from datetime import datetime
 
+from destiny_paths import DestinyPaths
 
-BASE_DIR = Path(__file__).resolve().parent
-LOG_FILE = BASE_DIR / "system_provision_log.json"
+
+BASE_DIR = DestinyPaths.src()
+LOG_FILE = DestinyPaths.logs() / "system_provision_log.json"
 
 
 class DestinyProvisioner:
@@ -21,13 +23,14 @@ class DestinyProvisioner:
     def __init__(self):
         self.events = []
         self.required_paths = [
-            BASE_DIR / "logs",
-            BASE_DIR / "memory",
-            BASE_DIR / "backup",
-            BASE_DIR / "runtime",
+            DestinyPaths.logs(),
+            DestinyPaths.state_dir(),
+            DestinyPaths.backup(),
+            DestinyPaths.runtime(),
+            DestinyPaths.archive(),
         ]
         self.required_files = [
-            BASE_DIR / "memory/system_state.json",
+            DestinyPaths.state_file(),
         ]
 
     # ---------- Logging ----------

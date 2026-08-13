@@ -1,74 +1,60 @@
 #!/bin/bash
-echo "🔥 Destiny FULL AUTO Installer startet..."
+set -e
 
-USER_HOME="/home/christians"
-DESTINY_DIR="/media/christians/EprimoSpeicher/Projektmappe/destiny_system"
+echo "Destiny FULL AUTO Installer startet..."
 
-echo "📌 Nutzer erkannt: $USER"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+USER_HOME="${HOME:-$(getent passwd "$(id -un)" | cut -d: -f6)}"
+DESTINY_DIR="${DESTINY_HOME:-$SCRIPT_DIR}"
+PY_BIN="${DESTINY_DIR}/.venv/bin/python3"
+
+echo "Nutzer: ${USER:-$(id -un)}"
+echo "Installationspfad: $DESTINY_DIR"
 cd "$DESTINY_DIR" || exit 1
 
-echo "📌 Prüfe Virtual Env..."
-if [ ! -d "venv" ]; then
-    echo "⚙ Erzeuge Python venv..."
-    python3 -m venv venv
+echo "Pruefe Virtual Env..."
+if [ ! -d ".venv" ]; then
+    echo "Erzeuge Python venv..."
+    python3 -m venv .venv
 fi
 
-echo "📌 Aktiviere Virtual Env..."
-source venv/bin/activate
+echo "Aktiviere Virtual Env..."
+# shellcheck disable=SC1091
+source .venv/bin/activate
 
-echo "📌 Installiere Requirements..."
+echo "Installiere Requirements..."
 pip install --upgrade pip
-pip install streamlit watchdog fastapi uvicorn requests --break-system-packages
+if [ -f requirements.txt ]; then
+    pip install -r requirements.txt
+else
+    pip install streamlit watchdog fastapi uvicorn requests flask rich psutil
+fi
 
-echo "📌 Systemd Services registrieren..."
-
-# CORE
-cat << 'EOC' | sudo tee /etc/systemd/system/destiny_core.service > /dev/null
+write_unit() {
+    local name="$1"
+    local exec_line="$2"
+    sudo tee "/etc/systemd/system/${name}.service" > /dev/null <<EOF
 [Unit]
-Description=Destiny Core Brain
+Description=${name}
 After=network.target
 
 [Service]
-WorkingDirectory=/media/christians/EprimoSpeicher/Projektmappe/destiny_system
-ExecStart=/media/christians/EprimoSpeicher/Projektmappe/destiny_system/venv/bin/python3 destiny_core.py
+WorkingDirectory=${DESTINY_DIR}
+ExecStart=${exec_line}
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
-EOC
+EOF
+}
 
-# GUI
-cat << 'EOG' | sudo tee /etc/systemd/system/destiny_gui.service > /dev/null
-[Unit]
-Description=Destiny GUI
-After=network.target
-
-[Service]
-WorkingDirectory=/media/christians/EprimoSpeicher/Projektmappe/destiny_system
-ExecStart=/media/christians/EprimoSpeicher/Projektmappe/destiny_system/venv/bin/python3 -m streamlit run destiny_gui.py --server.headless true
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOG
-
-# Monitor
-cat << 'EOM' | sudo tee /etc/systemd/system/destiny_monitor.service > /dev/null
-[Unit]
-Description=Destiny Monitor Engine
-After=network.target
-
-[Service]
-WorkingDirectory=/media/christians/EprimoSpeicher/Projektmappe/destiny_system
-ExecStart=/media/christians/EprimoSpeicher/Projektmappe/destiny_system/venv/bin/python3 destiny_monitor.py
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOM
+echo "Systemd Services registrieren..."
+write_unit "destiny_core" "${PY_BIN} ${DESTINY_DIR}/src/destiny_manager.py"
+write_unit "destiny_gui" "${PY_BIN} -m streamlit run ${DESTINY_DIR}/src/destiny_gui.py --server.headless true"
+write_unit "destiny_monitor" "${PY_BIN} ${DESTINY_DIR}/src/destiny_monitor.py"
 
 sudo systemctl daemon-reload
 sudo systemctl enable destiny_core.service destiny_gui.service destiny_monitor.service
 sudo systemctl start destiny_core.service destiny_gui.service destiny_monitor.service
 
-echo "🚀 DESTINY wurde vollständig installiert und läuft jetzt!"
+echo "DESTINY wurde installiert. GUI: http://localhost:8501"

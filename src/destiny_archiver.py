@@ -11,10 +11,11 @@ import json
 import re
 from typing import List, Dict, Optional
 
-ARCHIVE_BASE = Path.home() / "destiny_archive"
-ARCHIVE_BASE.mkdir(parents=True, exist_ok=True)
-
+from destiny_paths import DestinyPaths
 from destiny_sorter import DestinyScriptSorter
+
+ARCHIVE_BASE = DestinyPaths.archive()
+ARCHIVE_BASE.mkdir(parents=True, exist_ok=True)
 
 
 @dataclass

@@ -1,25 +1,39 @@
 #!/bin/bash
 set -e
 
-echo "🔥 Destiny — Full Auto Installer läuft..."
+echo "Destiny — Full Auto Installer laeuft..."
 
-REAL_USER=$(logname)
-REAL_HOME="/home/$REAL_USER"
-BASE="$REAL_HOME/destiny_system"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REAL_USER="${SUDO_USER:-$(logname 2>/dev/null || id -un)}"
+REAL_HOME="${HOME}"
+if [ -n "${SUDO_USER:-}" ]; then
+    REAL_HOME="$(getent passwd "$SUDO_USER" | cut -d: -f6)"
+fi
+BASE="${DESTINY_HOME:-$SCRIPT_DIR}"
+VENV="$BASE/.venv"
+PY_BIN="$VENV/bin/python3"
 
-echo "➡ Benutzer: $REAL_USER"
-echo "➡ Systempfad: $BASE"
+echo "Benutzer: $REAL_USER"
+echo "Systempfad: $BASE"
 
-echo "✔ venv aktivieren..."
-source "$BASE/venv/bin/activate"
+if [ ! -d "$VENV" ]; then
+    echo "Erzeuge Virtual Env..."
+    python3 -m venv "$VENV"
+fi
 
-echo "✔ Installiere Python-Abhängigkeiten..."
-pip install --quiet streamlit watchdog rich requests --break-system-packages || true
+echo "Aktiviere venv..."
+# shellcheck disable=SC1091
+source "$VENV/bin/activate"
 
-echo "✔ Erstelle System-Verzeichnisse..."
-mkdir -p "$BASE/autogen"
-mkdir -p "$BASE/logs"
-mkdir -p "$BASE/runtime"
+echo "Installiere Python-Abhaengigkeiten..."
+if [ -f "$BASE/requirements.txt" ]; then
+    pip install --quiet -r "$BASE/requirements.txt" || true
+else
+    pip install --quiet streamlit watchdog rich requests flask psutil || true
+fi
+
+echo "Erstelle System-Verzeichnisse..."
+mkdir -p "$BASE/logs" "$BASE/runtime" "$BASE/iso"
 
 ##########################################
 # SERVICE HELPER FUNKTION
@@ -28,7 +42,7 @@ create_service() {
 SERVICE_NAME=$1
 PYFILE=$2
 
-echo "✔ Registriere Service: $SERVICE_NAME"
+echo "Registriere Service: $SERVICE_NAME"
 
 sudo bash -c "cat > /etc/systemd/system/$SERVICE_NAME.service << EOF
 [Unit]
@@ -36,7 +50,7 @@ Description=$SERVICE_NAME Service
 After=network.target
 
 [Service]
-ExecStart=$BASE/venv/bin/python3 $BASE/$PYFILE
+ExecStart=$PY_BIN $BASE/src/$PYFILE
 WorkingDirectory=$BASE
 Restart=always
 User=$REAL_USER
@@ -48,7 +62,7 @@ EOF"
 sudo systemctl daemon-reload
 sudo systemctl enable $SERVICE_NAME.service || true
 sudo systemctl restart $SERVICE_NAME.service || true
-echo "✔ $SERVICE_NAME aktiv"
+echo "$SERVICE_NAME aktiv"
 }
 
 ##########################################
@@ -64,7 +78,7 @@ create_service "destiny_listener" "destiny_session_listener.py"
 ##########################################
 # STREAMLIT GUI AUTOSTART
 ##########################################
-echo "✔ GUI Autostart registrieren..."
+echo "GUI Autostart registrieren..."
 
 sudo bash -c "cat > /etc/systemd/system/destiny_gui.service << EOF
 [Unit]
@@ -72,7 +86,7 @@ Description=Destiny GUI Autostart
 After=network.target
 
 [Service]
-ExecStart=$BASE/venv/bin/python3 -m streamlit run destiny_gui.py
+ExecStart=$PY_BIN -m streamlit run $BASE/src/destiny_gui.py --server.headless true
 WorkingDirectory=$BASE
 Restart=always
 User=$REAL_USER
@@ -90,7 +104,7 @@ sudo systemctl restart destiny_gui.service || true
 ##########################################
 
 if [ -f "$REAL_HOME/.config/ngrok/ngrok.yml" ]; then
-    echo "✔ ngrok config erkannt — Remote Dashboard wird aktiviert"
+    echo "ngrok config erkannt — Remote Dashboard wird aktiviert"
 
     sudo bash -c "cat > /etc/systemd/system/destiny_ngrok.service << EOF
 [Unit]
@@ -112,16 +126,11 @@ EOF"
     sudo systemctl restart destiny_ngrok.service || true
 
 else
-    echo "⚠ Kein ngrok config gefunden (optional, später aktivierbar)"
+    echo "Kein ngrok config gefunden (optional, spaeter aktivierbar)"
 fi
 
-##########################################
-# FINAL
-##########################################
 echo ""
-echo "🔥 Destiny System vollständig installiert!"
-echo "✔ Services laufen"
-echo "✔ GUI erreichbar unter: http://localhost:8501"
-echo "✔ Logs liegen unter: $BASE/logs"
-echo "➡ Du kannst schlafen gehen — Destiny übernimmt jetzt. 😌"
+echo "Destiny System installiert."
+echo "GUI: http://localhost:8501"
+echo "Logs: $BASE/logs"
 echo ""

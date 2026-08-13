@@ -5,9 +5,10 @@ from pathlib import Path
 import streamlit as st
 
 from destiny_archiver import DestinyChatSorterPro
+from destiny_paths import DestinyPaths
 from destiny_power_center import DestinyPowerCenter
 
-ARCHIVE_BASE = Path.home() / "destiny_archive"
+ARCHIVE_BASE = DestinyPaths.archive()
 
 pc = DestinyPowerCenter()
 archiver = DestinyChatSorterPro()

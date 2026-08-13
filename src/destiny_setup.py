@@ -21,10 +21,12 @@ from flask import Flask, request, redirect, url_for, render_template_string
 from rich.console import Console
 from rich.panel import Panel
 
+from destiny_paths import DestinyPaths
+
 console = Console()
 
 # ====== GRUNDPFAD & PROFIL ======
-BASE_PATH = Path.home() / "destiny_archive"
+BASE_PATH = DestinyPaths.archive()
 PROFILE_FILE = BASE_PATH / "system_profile.json"
 
 

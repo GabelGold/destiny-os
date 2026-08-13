@@ -1,27 +1,43 @@
-import time
+#!/usr/bin/env python3
 import subprocess
-from pathlib import Path
+import sys
+import time
 
-LOG = Path("/media/christians/EprimoSpeicher/Projektmappe/destiny_system/update.log")
+from destiny_paths import DestinyPaths
+
+DestinyPaths.ensure()
+LOG = DestinyPaths.logs() / "update.log"
+
 
 def log(msg):
-    with LOG.open("a") as f:
+    LOG.parent.mkdir(parents=True, exist_ok=True)
+    with LOG.open("a", encoding="utf-8") as f:
         f.write(time.strftime("[%Y-%m-%d %H:%M:%S] ") + msg + "\n")
     print("🔧", msg)
+
 
 def try_fix(package):
     log(f"Versuche Modul zu reparieren: {package}")
     try:
-        subprocess.run(f"/media/christians/EprimoSpeicher/Projektmappe/destiny_system/venv/bin/pip install {package} --break-system-packages", shell=True)
-        log(f"✔ Modul repariert: {package}")
-    except:
-        log(f"❌ Reparatur fehlgeschlagen: {package}")
+        result = subprocess.run(
+            [sys.executable, "-m", "pip", "install", package],
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode == 0:
+            log(f"✔ Modul repariert: {package}")
+        else:
+            log(f"❌ Reparatur fehlgeschlagen: {package} ({result.stderr.strip()})")
+    except Exception as exc:
+        log(f"❌ Reparatur fehlgeschlagen: {package} ({exc})")
+
 
 MONITORED = [
     "streamlit",
     "speechrecognition",
     "pyaudio",
 ]
+
 
 def main():
     log("🚀 Destiny Update Engine aktiv")
