@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """
-Destiny Power Center – schaltet Module per Code ein.
+Destiny Power Center – startet Module auf Linux (systemd) und Windows (Prozess).
 """
 
 import subprocess
+import sys
+
+from destiny_paths import DestinyPaths
 
 
 class DestinyPowerCenter:
@@ -18,28 +21,58 @@ class DestinyPowerCenter:
     def list_modules(self):
         return list(self.modules.keys())
 
+    def _linux_service(self, unit: str):
+        subprocess.run(["sudo", "systemctl", "enable", unit], check=False)
+        subprocess.run(["sudo", "systemctl", "start", unit], check=False)
+
+    def _windows_start(self, label: str, args: list[str]):
+        print(f"Windows: starte {label}")
+        subprocess.Popen(args, cwd=str(DestinyPaths.root()))
+
     def enable_self_healing(self):
-        # Platz für spätere Logik
-        print("⚙ Self-Healing-Stub aktiv.")
+        if DestinyPaths.is_windows():
+            self._windows_start(
+                "Watchdog",
+                [DestinyPaths.python(), str(DestinyPaths.src() / "destiny_watchdog.py")],
+            )
+            print("Self-Healing auf Windows: Watchdog-Prozess gestartet (kein permanenter Task).")
+        else:
+            self._linux_service("destiny_watchdog.service")
+            print("Self-Healing-Service angestossen.")
 
     def enable_auto_backup(self):
-        subprocess.run(["sudo", "systemctl", "enable", "destiny_backup.service"])
-        subprocess.run(["sudo", "systemctl", "start", "destiny_backup.service"])
-        print("💾 Auto-Backup aktiviert.")
+        if DestinyPaths.is_windows():
+            self._windows_start(
+                "Backup",
+                [DestinyPaths.python(), str(DestinyPaths.src() / "destiny_backup_agent.py")],
+            )
+        else:
+            self._linux_service("destiny_backup.service")
+        print("Auto-Backup aktiviert.")
 
     def enable_voice(self):
-        subprocess.run(["sudo", "systemctl", "enable", "destiny_voice.service"])
-        subprocess.run(["sudo", "systemctl", "start", "destiny_voice.service"])
-        print("🎙 Voice Commander aktiviert.")
+        if DestinyPaths.is_windows():
+            self._windows_start(
+                "Voice",
+                [DestinyPaths.python(), str(DestinyPaths.src() / "voice_commander.py")],
+            )
+        else:
+            self._linux_service("destiny_voice.service")
+        print("Voice Commander aktiviert.")
 
     def enable_monitor(self):
-        subprocess.run(["sudo", "systemctl", "enable", "destiny_monitor.service"])
-        subprocess.run(["sudo", "systemctl", "start", "destiny_monitor.service"])
-        print("📡 Monitoring aktiviert.")
+        if DestinyPaths.is_windows():
+            self._windows_start(
+                "Monitor",
+                [DestinyPaths.python(), str(DestinyPaths.src() / "destiny_monitor.py")],
+            )
+        else:
+            self._linux_service("destiny_monitor.service")
+        print("Monitoring aktiviert.")
 
     def activate(self, name: str):
         fn = self.modules.get(name)
         if not fn:
-            print(f"❓ Unbekanntes Modul: {name}")
+            print(f"Unbekanntes Modul: {name}")
             return
         fn()
