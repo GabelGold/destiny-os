@@ -28,9 +28,21 @@ def rotate_backups(backup_dir, max_backups=5):
         print(f"Altes Backup geloescht: {oldest}")
 
 
+def refresh_latest(source: Path, backup_dir: Path) -> Path | None:
+    """Hält eine laufende Kopie unter backup_dir/latest."""
+    latest = Path(backup_dir) / "latest"
+    if not source.exists():
+        return None
+    if latest.exists():
+        shutil.rmtree(latest, ignore_errors=True)
+    shutil.copytree(source, latest)
+    print(f"Laufende Kopie: {latest}")
+    return latest
+
+
 def run_once() -> Path | None:
     DST_BASE.mkdir(parents=True, exist_ok=True)
-    ts = datetime.now().strftime("%Y-%m-%d_%H-%M")
+    ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     dst = DST_BASE / f"backup_{ts}"
     if not SRC.exists():
         print("Kein destiny_archive gefunden, ueberspringe.")
@@ -39,6 +51,7 @@ def run_once() -> Path | None:
     try:
         shutil.copytree(SRC, dst)
         print(f"Backup erstellt: {dst}")
+        refresh_latest(SRC, DST_BASE)
     except Exception as e:
         print(f"Backup-Fehler: {e}")
         dst = None
