@@ -1,15 +1,18 @@
 # Destiny OS
 
-Produktiver Neuaufbau auf Laufwerk **I:**  
-`I:\Offline Survival System Emulator\DESTINY-OS_PROD\`
+[![CI](https://github.com/GabelGold/destiny-os/actions/workflows/ci.yml/badge.svg)](https://github.com/GabelGold/destiny-os/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-proprietary-lightgrey.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](https://github.com/GabelGold/destiny-os)
 
-Kurzanleitung, Installation und Befehle: [docs/README.md](docs/README.md)
+Offline-Schicht für Chat-Archiv, Setup und lokale Services.  
+Entwickler: Christian Schmitt · Stand: 13. August 2026 · Version **1.4.0**
 
-Gesamtüberblick zum Hochladen / Reviewen: [PROJEKT_DOKUMENTATION.txt](PROJEKT_DOKUMENTATION.txt)
+Kurzanleitung: [docs/README.md](docs/README.md) · Review: [PROJEKT_DOKUMENTATION.txt](PROJEKT_DOKUMENTATION.txt) · API: [docs/index.md](docs/index.md)
 
 ```powershell
 python tools\live_check.py
-.\start_destiny_windows.bat
+pytest tests/ -v
 python -m streamlit run src\destiny_gui.py
 python src\destiny_setup.py
 ```
