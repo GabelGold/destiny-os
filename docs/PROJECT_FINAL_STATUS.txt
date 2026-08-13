@@ -27,10 +27,8 @@ A) tFG-ISO (quantum_kernel_tFG.iso)
    - Wenn die ISO woanders liegt: Pfad schicken, dann als Pre-Release anhaengen.
 
 B) GitHub Pages
-   - https://gabelgold.github.io/destiny-os/ antwortet aktuell 404.
-   - Workflow docs.yml ist gepusht; Quelle in Settings → Pages auf
-     Branch "gh-pages" / / (root) stellen, falls der Workflow die Branch
-     schon angelegt hat.
+   - Nach gh-deploy + Pages-Quelle gh-pages: HTTP 200
+     https://gabelgold.github.io/destiny-os/
 
 C) Dokumentation
    - MkDocs-Nav nutzt docs/*.md (index, API, Installation).
@@ -43,8 +41,8 @@ D) Wartung
 
 === 3. NÄCHSTE SCHRITTE (PRIORITÄT) ===
 1. tFG-ISO nur hochladen, wenn die Datei wirklich existiert.
-2. GitHub Pages: gh-pages aktivieren, bis die URL nicht mehr 404 ist.
-3. Diese Datei liegt in docs/ und ist im Repo verlinkt.
+2. Pages ist erreichbar (200). Workflow docs.yml haelt sie aktuell.
+3. Diese Datei liegt in docs/ und ist im README + Release verlinkt.
 
 ======================================================
 PROJEKTLEITUNG: Christian Schmitt (GabelGold)
