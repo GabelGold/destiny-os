@@ -4,6 +4,7 @@ site_author: Christian Schmitt
 
 repo_name: GabelGold/destiny-os
 repo_url: https://github.com/GabelGold/destiny-os
+site_url: https://gabelgold.github.io/destiny-os/
 
 docs_dir: docs
 exclude_docs: |

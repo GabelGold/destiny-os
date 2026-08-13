@@ -1,0 +1,14 @@
+Destiny OS 1.4.0 – SHA256
+Stand: 2026-08-13
+
+3307de400d1f686b0f48605536c1e60fb5ebce559734bf10830fe7448770cab9  PROJEKT_DOKUMENTATION.txt
+b9c37fd37535bc6c942ac26ffcc0188c4f217880af7647705abc2a4863d5bb1f  src\destiny_core.py
+1c3b77d38da988d16130f64ad9982bac81cc66a40e8f7e25bff6f42c5c28996a  src\destiny_gui.py
+dd60f9169f5936338b7a787eb19932db22a756b62f9b45241666ae5458790661  src\destiny_manager.py
+fdc9ad96a3c4122a4ce771a1f1317db2e025a312a968532254407ac79942b77a  docs\Abschlussbericht_Destiny_OS.pdf
+
+Externe NOVA-Artefakte (nicht im Git, vom USB-Stick):
+dbafdebcd993ea2691e1153f451aac90eb348187678683f2d3e0656da0515882  I:\NOVA USB DEMO STICK\system\nova\goldgabel\boot\nova_owner.iso  (11915264 bytes)
+d4ca4ae21fa8ecd3454d45b7c11988523acfde504fa7bbe7a39e183c201749fe  I:\NOVA USB DEMO STICK\system\nova\goldgabel\boot\kernel.elf  (39824 bytes)
+
+Nicht gefunden: quantum_kernel_tFG.iso, CHANGELOG_tFG.txt, nova-quantum.bin, nova-quantum64.bin
