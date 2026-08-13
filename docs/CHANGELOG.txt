@@ -1,6 +1,22 @@
 DESTINY OS – CHANGELOG
 ======================
 
+[1.3.0] – 2026-08-13 – Sprint C GUI
+-----------------------------------
+Added
+  - Projektverwaltung, Live Monitoring, Sprachsteuerung in destiny_gui.py
+  - Tutorial-Suche (search_help) in der Sidebar
+  - Flask /admin und /api/status
+  - React-Landingpage mit Links auf :8501 / :5000
+
+Changed
+  - DestinyChatSorterPro ist der kanonische Archiver
+  - DestinyArchiverCore ist nur noch eine Unterklasse
+  - Streamlit = Haupt-GUI, Flask = Admin-Backend
+
+Removed
+  - src/destiny_web_panel.py
+
 [1.2.0] – 2026-08-13 – Sprint B Services
 ----------------------------------------
 Added

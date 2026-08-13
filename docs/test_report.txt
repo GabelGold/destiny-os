@@ -1,28 +1,24 @@
 DESTINY OS – TESTREPORT
 =======================
-Datum:     13. August 2026 (Sprint B)
+Datum:     13. August 2026 (Sprint C)
 Host:      Windows, Python 3.11.15
 Ergebnis:  BESTANDEN (Exit 0)
 
 1. LIVE-CHECK
 -------------
-  26 Python-Module, 6 Docs, 5 Web-Dateien
-  Imports inkl. service_manager, watchdog, commander: OK
-  Hardcoded-Path-Scan: keine Treffer
+  25 Python-Module (web_panel entfernt)
+  GUI-Module Projektverwaltung / Live Monitoring / Sprachsteuerung: vorhanden
+  DestinyArchiverCore erbt DestinyChatSorterPro
+  destiny_web_panel.py: geloescht
 
-2. SERVICES
------------
-  destiny_updater.py ohne Flag     Exit 2 (Hilfe, kein Pull)
-  destiny_updater.py --status      Exit 0
-  destiny_service_manager.py list  alle STOPPED (erwartet, nichts gestartet)
-  status core                      STOPPED
-  Watchdog.check_health(core)      OK (Manager-Health)
-  SessionListener record + incoming-Datei  OK
-  rotate_backups + latest/         OK
+2. HTTP-SMOKE (temporaer gestartet)
+-----------------------------------
+  Flask http://127.0.0.1:5000/admin     200, Service-Liste
+  Flask http://127.0.0.1:5000/api/status  JSON Snapshot
+  Streamlit http://127.0.0.1:8501       200
+  Service-Manager erkennt GUI als RUNNING (Port 8501)
 
-3. NICHT AUSGEFUEHRT (absichtlich)
-----------------------------------
-  install_nssm_windows.ps1 -RegisterServices  (wuerde Systemdienste anlegen)
-  schtasks /Create                            (keine stillen Autostart-Tasks)
-  Watchdog.run() / Streamlit-GUI Dauerbetrieb
-  git pull --update
+3. NICHT IM BROWSER DURCHGEKLICKT
+---------------------------------
+  Kein Browser-MCP. Module wurden per Code + HTTP-Smoke geprueft.
+  Mikrofon-Listen wurde nicht live ausgefuehrt.

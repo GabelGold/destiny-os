@@ -42,11 +42,10 @@ P1-4  destiny_voice.py              pyttsx3-Schleife alle 10 Minuten. Kein Comma
 P1-5  voice_commander.py            Google-SpeechRecognize – nicht offline.
                                     Ohne SpeechRecognition nur Dummy-Print.
 
-P1-6  destiny_web_panel.py          Zweite, abgespeckte Streamlit-App, überlappt GUI.
+P1-6  destiny_web_panel.py          BEHOBEN Sprint C: Datei entfernt.
 
-P1-7  Zwei Archiver                 DestinyChatSorterPro (destiny_archiver.py) und
-                                    DestinyArchiverCore (destiny_setup.py) schreiben
-                                    unterschiedliche Meta-Formate in dasselbe Archiv.
+P1-7  Zwei Archiver                 BEHOBEN Sprint C: DestinyArchiverCore erbt
+                                    DestinyChatSorterPro (kanonisch).
 
 P1-8  autoinstall.sh                BEHOBEN Sprint A: SCRIPT_DIR / $HOME / .venv / src/
 
@@ -101,10 +100,12 @@ Sprint B – Services
   [x] Windows Persistenz: schtasks + NSSM (Installer, nicht still installiert)
 
 Sprint C – GUI / eine Oberfläche
-  [ ] Eine UI wählen (Streamlit ODER Flask), die andere als Redirect
-  [ ] Einen Archiver als kanonisch markieren
-  [ ] Tutorial-Suche in destiny_gui verdrahten
-  [ ] Projektverwaltung auf destiny_archive lesen/schreiben
+  [x] Streamlit Haupt-GUI, Flask Admin-Backend
+  [x] DestinyChatSorterPro kanonisch
+  [x] Tutorial-Suche in der Sidebar
+  [x] Projektverwaltung liest/schreibt destiny_archive
+  [x] Live Monitoring (psutil + Services)
+  [x] destiny_web_panel.py entfernt
 
 Sprint D – Qualität
   [ ] pytest für Archiver, Sorter, Layer, Manager

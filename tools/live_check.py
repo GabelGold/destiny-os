@@ -51,7 +51,6 @@ EXPECTED_PY = [
     "destiny_updater.py",
     "destiny_voice.py",
     "destiny_watchdog.py",
-    "destiny_web_panel.py",
     "voice_commander.py",
 ]
 
@@ -279,6 +278,39 @@ def run_listener_smoke() -> dict:
         return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
 
 
+def check_web_services() -> dict:
+    import socket
+
+    ports = {"streamlit": 8501, "flask": 5000}
+    running = {}
+    for name, port in ports.items():
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(0.3)
+        try:
+            running[name] = sock.connect_ex(("127.0.0.1", port)) == 0
+        finally:
+            sock.close()
+    return {"ok": True, "required": False, "running": running}
+
+
+def test_gui_modules() -> dict:
+    gui_path = SRC_DIR / "destiny_gui.py"
+    if not gui_path.exists():
+        return {"ok": False, "error": "destiny_gui.py missing"}
+    content = gui_path.read_text(encoding="utf-8")
+    modules = ["Projektverwaltung", "Live Monitoring", "Sprachsteuerung"]
+    found = [name for name in modules if name in content]
+    setup = (SRC_DIR / "destiny_setup.py").read_text(encoding="utf-8")
+    canonical = "DestinyChatSorterPro" in setup and "class DestinyArchiverCore(DestinyChatSorterPro)" in setup
+    gone = not (SRC_DIR / "destiny_web_panel.py").exists()
+    return {
+        "ok": len(found) == len(modules) and canonical and gone,
+        "found": found,
+        "canonical_archiver": canonical,
+        "web_panel_removed": gone,
+    }
+
+
 def run_watchdog_smoke() -> dict:
     try:
         from destiny_watchdog import DestinyWatchdog, health_check
@@ -385,6 +417,8 @@ def main() -> int:
     report["checks"]["service_manager"] = run_service_manager_smoke()
     report["checks"]["listener"] = run_listener_smoke()
     report["checks"]["watchdog"] = run_watchdog_smoke()
+    report["checks"]["gui_modules"] = test_gui_modules()
+    report["checks"]["web_ports"] = check_web_services()
     report["checks"]["hardcoded_paths"] = scan_hardcoded_paths()
     report["checks"]["systemd_services_documented"] = SYSTEMD_SERVICES
 
@@ -421,7 +455,7 @@ def main() -> int:
         failures.append({"group": "backup_rotate", **report["checks"]["backup_rotate"]})
     if not report["checks"]["hardcoded_paths"]["ok"]:
         failures.append({"group": "hardcoded_paths", **report["checks"]["hardcoded_paths"]})
-    for extra in ("updater", "service_manager", "listener", "watchdog"):
+    for extra in ("updater", "service_manager", "listener", "watchdog", "gui_modules"):
         if not report["checks"][extra]["ok"]:
             failures.append({"group": extra, **report["checks"][extra]})
 

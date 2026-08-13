@@ -2,7 +2,7 @@
 PROJEKT_DOKUMENTATION – DESTINY OS
 ================================================================================
 PROJEKTNAME:     Destiny OS
-VERSION:         1.2.0
+VERSION:         1.3.0
 ENTWICKLER:      Christian Schmitt
 STAND:           13. August 2026
 LAUFWERK:        I:
@@ -89,7 +89,7 @@ Diese Datei ist die Zusammenfassung zum Hochladen / zur Überprüfung.
   destiny_updater.py             git-pull-Schleife
   destiny_voice.py               pyttsx3-Statusansage
   destiny_watchdog.py            periodischer Service-Restart
-  destiny_web_panel.py           kleines Streamlit-Panel
+  (destiny_web_panel.py entfernt, Sprint C)
   voice_commander.py             SpeechRecognition-Stub
   tutorial_memory.json           gespeicherte Hilfe-Blöcke
   destiny_memory.sqlite          Demo-Memory-DB
