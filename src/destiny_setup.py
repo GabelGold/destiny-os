@@ -21,6 +21,7 @@ from flask import Flask, request, redirect, url_for, render_template_string
 from rich.console import Console
 from rich.panel import Panel
 
+from destiny_archiver import DestinyChatSorterPro
 from destiny_paths import DestinyPaths
 
 console = Console()
@@ -30,137 +31,12 @@ BASE_PATH = DestinyPaths.archive()
 PROFILE_FILE = BASE_PATH / "system_profile.json"
 
 
-# ====== ARCHIVER KERN ======
-class DestinyArchiverCore:
+class DestinyArchiverCore(DestinyChatSorterPro):
+    """Kompatibilitaetshuelle. Schreibt nur noch ueber DestinyChatSorterPro."""
+
     def __init__(self):
-        self.base = BASE_PATH
-        self.base.mkdir(exist_ok=True)
-
-    def detect_project(self, text: str) -> str:
-        text_low = text.lower()
-        mapping = {
-            "mind os": "mind_os",
-            "destiny": "destiny",
-            "agent": "agenten",
-            "python": "python_skripte",
-            "ki": "ki_system",
-            "chrysalis": "chrysalis",
-        }
-        for key, name in mapping.items():
-            if key in text_low:
-                return name
-        return "allgemein"
-
-    def save_chat(self, text: str, source: str = "web", project_override: str = "") -> Dict:
-        ts = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        project = project_override.strip() or self.detect_project(text)
-        proj_slug = re.sub(r"[^\w\-]+", "_", project).lower()
-
-        proj_dir = self.base / proj_slug
-        proj_dir.mkdir(parents=True, exist_ok=True)
-
-        chat_file = proj_dir / f"chat_{ts}_{source}.txt"
-        chat_file.write_text(text, encoding="utf-8")
-
-        code_count = self._extract_code_blocks(text, proj_dir, ts)
-        self._update_meta(proj_dir, project, ts, chat_file, code_count)
-
-        return {
-            "project": project,
-            "slug": proj_slug,
-            "chat_file": str(chat_file),
-            "code_blocks": code_count,
-        }
-
-    def _extract_code_blocks(self, text: str, proj_dir: Path, ts: str) -> int:
-        pattern = r"```(\w+)?\s*\n(.*?)```"
-        blocks = re.findall(pattern, text, re.DOTALL)
-        if not blocks:
-            return 0
-
-        code_dir = proj_dir / "code"
-        code_dir.mkdir(exist_ok=True)
-
-        count = 0
-        for lang, code in blocks:
-            lang = lang or "txt"
-            content = code.strip()
-            if not content:
-                continue
-            h = hashlib.sha1(content.encode()).hexdigest()[:8]
-            fname = code_dir / f"code_{ts}_{h}.{lang}"
-            fname.write_text(content, encoding="utf-8")
-            count += 1
-        return count
-
-    def _update_meta(self, proj_dir: Path, project: str, ts: str, chat_file: Path, code_blocks: int):
-        meta_file = proj_dir / "project_meta.json"
-        entry = {
-            "project": project,
-            "timestamp": ts,
-            "chat_file": str(chat_file),
-            "code_blocks": code_blocks,
-        }
-        if meta_file.exists():
-            try:
-                existing = json.loads(meta_file.read_text(encoding="utf-8"))
-                if isinstance(existing, list):
-                    existing.append(entry)
-                else:
-                    existing = [existing, entry]
-            except Exception:
-                existing = [entry]
-        else:
-            existing = [entry]
-        meta_file.write_text(json.dumps(existing, indent=2, ensure_ascii=False), encoding="utf-8")
-
-    def stats(self) -> Dict:
-        stats = {
-            "projects": 0,
-            "chats": 0,
-            "code_blocks": 0,
-        }
-        if not self.base.exists():
-            return stats
-
-        for proj in self.base.iterdir():
-            if not proj.is_dir():
-                continue
-            stats["projects"] += 1
-            stats["chats"] += len(list(proj.glob("chat_*.txt")))
-            code_dir = proj / "code"
-            if code_dir.exists():
-                stats["code_blocks"] += len(list(code_dir.glob("*")))
-        return stats
-
-    def list_projects(self) -> List[Dict]:
-        projects = []
-        if not self.base.exists():
-            return projects
-        for proj in self.base.iterdir():
-            if not proj.is_dir():
-                continue
-            chats = len(list(proj.glob("chat_*.txt")))
-            projects.append({"name": proj.name, "chats": chats})
-        projects.sort(key=lambda x: x["name"])
-        return projects
-
-    def latest_chat(self):
-        latest = None
-        latest_time = None
-        if not self.base.exists():
-            return None
-        for proj in self.base.iterdir():
-            if not proj.is_dir():
-                continue
-            for chat in proj.glob("chat_*.txt"):
-                t = chat.stat().st_mtime
-                if latest_time is None or t > latest_time:
-                    latest_time = t
-                    latest = chat
-        if latest:
-            return latest
-        return None
+        super().__init__(base_dir=BASE_PATH)
+        self.base = self.base_dir
 
 
 archiver = DestinyArchiverCore()
@@ -340,6 +216,7 @@ def home():
           <div class="subtitle">Willkommen{{ ' ' + profile['username'] if profile['username'] else '' }} — Reality-Aware Setup</div>
         </div>
         <div>
+          <a href="{{ url_for('admin') }}" class="btn-secondary btn">Admin</a>
           <a href="{{ url_for('setup') }}" class="btn-secondary btn">⚙ Setup</a>
         </div>
       </header>
@@ -612,6 +489,47 @@ def tools():
     </html>
     """
     return render_template_string(html, tools=TOOL_REGISTRY, script=script, selected=selected, target=target)
+
+
+@app.route("/admin")
+def admin():
+    from destiny_service_manager import DestinyServiceManager
+
+    mgr = DestinyServiceManager()
+    services = mgr.list_all()
+    items = "".join(f"<li>{svc}</li>" for svc in services)
+    html = f"""
+    <!doctype html>
+    <html lang="de">
+    <head>
+      <meta charset="utf-8">
+      <title>Destiny Admin</title>
+      <style>
+        body {{ font-family: system-ui, sans-serif; background:#020617; color:#e5e7eb; margin:0; }}
+        main {{ max-width:800px; margin:32px auto; padding:0 16px; }}
+        a {{ color:#93c5fd; }}
+        li {{ margin: 6px 0; }}
+      </style>
+    </head>
+    <body>
+      <main>
+        <h1>Destiny Admin</h1>
+        <p>Service-Status (Prozess/Port, kein stiller Autostart)</p>
+        <ul>{items}</ul>
+        <p><a href="/">Zurueck zum Dashboard</a> · <a href="/api/status">JSON</a></p>
+      </main>
+    </body>
+    </html>
+    """
+    return html
+
+
+@app.route("/api/status")
+def api_status():
+    from flask import jsonify
+    from destiny_service_manager import DestinyServiceManager
+
+    return jsonify(DestinyServiceManager().snapshot())
 
 
 # ====== MAIN ENTRY ======
