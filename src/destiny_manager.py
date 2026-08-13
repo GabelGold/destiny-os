@@ -81,6 +81,19 @@ class DestinyManager:
     # --------------------------------------------
     def get_status(self):
         return self.last_status
+
+    def status(self):
+        """Service-Status aller Destiny-Dienste plus eigener Health-Check."""
+        from destiny_service_manager import DestinyServiceManager
+
+        services = DestinyServiceManager().snapshot()
+        payload = {
+            "time": datetime.utcnow().isoformat(),
+            "health": self.health_check(),
+            "services": services,
+        }
+        self.last_status = payload
+        return payload
     # --------------------------------------------
     # SELF HEALING ENGINE
     # --------------------------------------------
