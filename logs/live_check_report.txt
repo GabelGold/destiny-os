@@ -1,0 +1,16 @@
+DESTINY OS – LIVE CHECK
+Zeit (UTC): 2026-08-13T18:03:21.482452+00:00
+Root: I:\Offline Survival System Emulator\DESTINY-OS_PROD
+Python: 3.11.15 on Windows
+
+src/*.py: 24 (Soll 24+)
+docs/:    6 (Soll 6)
+web/:     5 (Soll 5)
+
+SHA256:
+  src\destiny_core.py: b9c37fd37535bc6c942ac26ffcc0188c4f217880af7647705abc2a4863d5bb1f
+  src\destiny_gui.py: 63dfccf7600dfb5933715e550ed4637f94010b9a39aae65b74f282202f179fb9
+  src\destiny_manager.py: 703b73eaffd1cc640a54f18cdcb419e5a74c86bd767bc308e0fdb84274195d3a
+  PROJEKT_DOKUMENTATION.txt: 375c98d7f0671c56eafc75d81ab20c7118298e36a013790325ab6664d1558e92
+
+ERGEBNIS: ALLE PRUEFUNGEN BESTANDEN

@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# Destiny runtime (wird vom Provisioner erzeugt)
+src/logs/
+src/memory/
+src/backup/
+src/runtime/
+src/system_provision_log.json
+src/*.sqlite-journal
+
+# Node / Vite
+web/node_modules/
+web/dist/
+
+# Logs & OS
+logs/*.json
+.DS_Store
+Thumbs.db
+*.swp

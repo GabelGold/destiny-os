@@ -1,0 +1,98 @@
+DESTINY OS – PROJEKTSTATUS
+==========================
+Stand:            13. August 2026
+Version:          1.0.0 (Produktkern, neu strukturiert auf Laufwerk I:)
+Entwickler:       Christian Schmitt
+Projektordner:    I:\Offline Survival System Emulator\DESTINY-OS_PROD\
+
+1. WAS IST DESTINY OS
+---------------------
+Destiny OS ist keine eigene Kernel-/ISO-Distribution, sondern eine Python-Schicht
+für Offline-Archivierung, Setup, Monitoring und Service-Orchestrierung.
+Der produktive Code stammt aus dem GoldGabel-/NOVA-Stick:
+
+  I:\NOVA USB DEMO STICK\system\nova\goldgabel\destiny\
+
+Er wurde am 13.08.2026 nach DESTINY-OS_PROD\src\ übernommen, dokumentiert
+und um Live-Check, Web-Landingpage und Git-Grundlage ergänzt.
+
+2. TECHNISCHER STATUS
+---------------------
+Komponente                         Status          Hinweis
+---------------------------------  --------------  ---------------------------------------------
+Ordnerstruktur auf I:              OK              iso/, src/, docs/, tools/, logs/, web/
+Quellcode (24 .py + JSON)          OK              kopiert nach src/
+Chat-Archiv (destiny_archiver)     FUNKTIONIERT    speichert nach ~/destiny_archive
+Script-Sorter                      FUNKTIONIERT    erkennt grob python/bash/html/yaml
+Streamlit-GUI (destiny_gui)        TEILWEISE       Chat-Archiv + Power Center aktiv
+Flask-Setup (destiny_setup)        FUNKTIONIERT    Dashboard :5000, Setup, Tools, Archiv
+Memory-Layer (SQLite)              FUNKTIONIERT    destiny_layer.py + destiny_memory.sqlite
+Provisioner / Manager              FUNKTIONIERT    Ordner/State, Health-Check nach Fix
+Tutorial-Hilfe                     FUNKTIONIERT    tutorial_memory.json, TTS optional
+Backup-Agent                       TEILWEISE       30-Min-Kopie, keine Rotation
+Monitor                            TEILWEISE       braucht psutil, Linux-Disk "/"
+Voice Commander                    STUB            Dummy ohne SpeechRecognition
+Power Center                       LINUX-ONLY      systemctl/sudo
+systemd-Installer                  LINUX-ONLY      autoinstall.sh + install_destiny_all.sh
+ISO / Bootimage                    LEER            iso/ ist Platzhalter
+Web-Landingpage (React/Vite)       VORBEREITET     web/ – Marketing/Übersicht, kein Backend
+Live-Check                         NEU             tools/live_check.py
+Windows-Autostart                  FEHLT           Services sind systemd-zentriert
+
+3. WAS FUNKTIONIERT (ohne Linux-Services)
+-----------------------------------------
+- Python-Module importieren (nach Guard-Fix, siehe CHANGELOG)
+- Chat speichern über Archiver-CLI oder GUI
+- Code-Blöcke aus Chats extrahieren und einsortieren
+- Provisioner legt logs/, memory/, backup/, runtime/ an
+- Manager.initialize() und Manager.health_check()
+- DestinyLayer SQLite put/get/stats
+- Flask-Dashboard (wenn flask + rich installiert)
+- Streamlit-GUI (wenn streamlit installiert)
+- Live-Check schreibt logs/live_check_report.json
+
+4. WAS NICHT FUNKTIONIERT / NICHT PORTIERT IST
+----------------------------------------------
+- Hardcodierte Linux-Pfade in mehreren Dateien
+  (/home/christians/..., /media/christians/EprimoSpeicher/...)
+- systemd-Services auf Windows (I: ist ein USB-/Datenlaufwerk)
+- Voice-TTS-Schleife ohne Mikrofon/Engine-Setup
+- Watchdog startet Services alle 15 Minuten blind neu
+- Updater macht Endlos-git-pull auf alten Pfad
+- GUI-Module Projektverwaltung / Live Monitoring / Sprachsteuerung
+  sind Platzhalter
+- iso/ enthält kein bootfähiges Image
+- GitHub-Remote ist Platzhalter: https://github.com/deinname/destiny-os
+  (kein Push ausgeführt)
+
+5. BUILD-INFOS
+--------------
+Quelldatum der Module:   überwiegend 08.12.2025, Layer/Memory 06.08.2026
+Neuaufbau PROD:          13.08.2026
+Python-Ziel:             3.10+ (Union-Typen in destiny_tutorial.py / session_listener.py)
+GUI:                     Streamlit (Port 8501)
+Web-Panel (Flask):       Port 5000
+Landingpage:             Vite + React (npm run dev im Ordner web/)
+Archivbasis:             %USERPROFILE%\destiny_archive  bzw. ~/destiny_archive
+Backups:                 %USERPROFILE%\destiny_backups  bzw. ~/destiny_backups
+
+6. SYSTEMD-SERVICES (8, nur Linux)
+----------------------------------
+1. destiny_core       -> destiny_manager.py   (install_destiny_all.sh)
+2. destiny_gui        -> streamlit run destiny_gui.py
+3. destiny_monitor    -> destiny_monitor.py
+4. destiny_backup     -> destiny_backup_agent.py
+5. destiny_advisor    -> destiny_advisor.py
+6. destiny_listener   -> destiny_session_listener.py
+7. destiny_voice      -> voice_commander.py / destiny_voice.py (Power Center)
+8. destiny_ngrok      -> optional, nur wenn ~/.config/ngrok/ngrok.yml existiert
+
+Zusätzlich referenziert, aber nicht im Full-Installer angelegt:
+  destiny_updater.service, destiny_watchdog.service (Commander-Map)
+
+7. NÄCHSTER SCHRITT FÜR CHRISTIAN
+---------------------------------
+1. tools\live_check.py ausführen
+2. docs\FEHLERANALYSE.txt und dieses Dokument prüfen
+3. PROJEKT_DOKUMENTATION.txt hochladen / reviewen
+4. GitHub-Remote auf den echten Account setzen, danach erst pushen

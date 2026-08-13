@@ -1,0 +1,26 @@
+Destiny OS – Proprietäre Lizenz
+
+Copyright (c) 2025-2026 Christian Schmitt
+
+Dieser Ordner enthält den Destiny-OS-Quellcode und die dazugehörige
+Projektdokumentation. Alle Rechte vorbehalten, soweit nicht schriftlich
+anders vereinbart.
+
+Erlaubt (für den Rechteinhaber bzw. nach Vereinbarung):
+  - Ausführen, prüfen, sichern und weiterentwickeln auf eigenen Rechnern
+  - Kopieren auf USB-/Datenlaufwerke zum eigenen Betrieb
+
+Nicht erlaubt ohne schriftliche Zustimmung:
+  - Veröffentlichung als fremdes Werk
+  - Entfernen dieser Lizenz- oder Urheberhinweise
+  - Weitergabe des gesamten Pakets als „frei / Public Domain“
+
+Kein Anspruch auf Drittanbieter-Komponenten:
+  Dieses Paket beansprucht keinen Kernel, keinen Bootloader und keine
+  NOVA-/GoldGabel-Systemteile außerhalb der hier kopierten Destiny-Quellen.
+  Für das USB-Gesamtpaket gilt zusätzlich die Lizenz auf dem Stick
+  (docs/LICENSE.txt im GoldGabel-Paket).
+
+OHNE GEWÄHR:
+  Bereitgestellt wie besehen. Keine Garantie für Bootfähigkeit, Datenerhalt
+  oder Eignung für einen bestimmten Zweck.

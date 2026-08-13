@@ -1,0 +1,137 @@
+================================================================================
+PROJEKT_DOKUMENTATION – DESTINY OS
+================================================================================
+PROJEKTNAME:     Destiny OS
+VERSION:         1.0.0
+ENTWICKLER:      Christian Schmitt
+STAND:           13. August 2026
+LAUFWERK:        I:
+PROJEKTORDNER:   I:\Offline Survival System Emulator\DESTINY-OS_PROD\
+
+Diese Datei ist die Zusammenfassung zum Hochladen / zur Überprüfung.
+
+
+1. WAS IST ENTHALTEN
+--------------------------------------------------------------------------------
+  src/            24 Python-Module + tutorial_memory.json + destiny_memory.sqlite
+  docs/           PROJEKTSTATUS, FEHLERANALYSE, CHANGELOG, README,
+                  build_log, test_report
+  tools/          live_check.py
+  web/            React/Vite Landingpage (package.json, index.html, src/)
+  logs/           Build-Log und Live-Check-Reports
+  iso/            leer (reserviert)
+  Root            requirements.txt, LICENSE, .gitignore, README.md,
+                  autoinstall.sh, install_destiny_all.sh,
+                  create_destiny_structure.ps1, diese Datei
+
+
+2. WIE MAN ES NUTZT
+--------------------------------------------------------------------------------
+  GUI starten (Streamlit, http://localhost:8501):
+      python -m streamlit run src\destiny_gui.py
+
+  Web-Panel / Setup öffnen (Flask, http://127.0.0.1:5000):
+      python src\destiny_setup.py
+
+  Chats archivieren:
+      - In der GUI Modul „Chat Archivierung“ → Text einfügen → Speichern
+      - oder: python src\destiny_archiver.py  (Eingabe, dann Zeile END)
+      Zielordner: %USERPROFILE%\destiny_archive
+
+  System prüfen:
+      python tools\live_check.py
+
+  Landingpage:
+      cd web && npm install && npm run dev
+
+
+3. SYSTEMD-SERVICES (8)
+--------------------------------------------------------------------------------
+  1. destiny_core       destiny_manager.py
+  2. destiny_gui        streamlit run destiny_gui.py
+  3. destiny_monitor    destiny_monitor.py
+  4. destiny_backup     destiny_backup_agent.py
+  5. destiny_advisor    destiny_advisor.py
+  6. destiny_listener   destiny_session_listener.py
+  7. destiny_voice      voice_commander.py (Power Center)
+  8. destiny_ngrok      optional, nur mit ngrok.yml
+
+  Installation nur unter Linux:  sudo bash install_destiny_all.sh
+  Auf Windows (I:) laufen diese Units nicht.
+
+
+4. QUELLCODE – DATEILISTE (src/)
+--------------------------------------------------------------------------------
+  destiny_advisor.py             Log-Berater (hardcodierter Linux-Pfad)
+  destiny_archiver.py            Chat-Recorder + Metadaten
+  destiny_backup_agent.py        30-Minuten-Kopie von destiny_archive
+  destiny_commander.py           Inbox-Kommandos für systemd
+  destiny_core.py                Kern-Klasse (observe/decide/reflect)
+  destiny_event_engine.py        Heartbeat → Core
+  destiny_evolver.py             Stub (Zufallsregeln)
+  destiny_gui.py                 Streamlit-Dashboard
+  destiny_layer.py               SQLite-Memory
+  destiny_manager.py             Orchestrierung + Health-Check
+  destiny_monitor.py             CPU/RAM/Disk via psutil
+  destiny_power_center.py        Modul-Schalter (systemctl)
+  destiny_provisioner.py         legt logs/memory/backup/runtime an
+  destiny_session_listener.py    speichert Session-Snippets
+  destiny_setup.py               Flask Setup + Tool-Installer + Archiv
+  destiny_sorter.py              Code-Blöcke nach Sprache
+  destiny_sync.py                Stub (sync.log)
+  destiny_tutorial.py            Teach-Tutorial + optionales TTS
+  destiny_update_engine.py       pip-Repair-Schleife
+  destiny_updater.py             git-pull-Schleife
+  destiny_voice.py               pyttsx3-Statusansage
+  destiny_watchdog.py            periodischer Service-Restart
+  destiny_web_panel.py           kleines Streamlit-Panel
+  voice_commander.py             SpeechRecognition-Stub
+  tutorial_memory.json           gespeicherte Hilfe-Blöcke
+  destiny_memory.sqlite          Demo-Memory-DB
+
+
+5. OFFENE PUNKTE / TODO
+--------------------------------------------------------------------------------
+  [ ] Hardcodierte Linux-Pfade entfernen (siehe docs/FEHLERANALYSE.txt)
+  [ ] Backup-Rotation einbauen
+  [ ] Watchdog nur bei echtem Fehler neu starten
+  [ ] Eine UI als kanonisch festlegen (Streamlit oder Flask)
+  [ ] Archiver-Formate vereinheitlichen
+  [ ] Session-Listener als echten Dienst oder aus Installer nehmen
+  [ ] pytest-Suite
+  [ ] GitHub-Remote auf echten Account setzen, dann pushen
+  [ ] iso/ nur füllen, wenn ein bootfähiges Image wirklich gebaut wird
+  [ ] Windows-Startskript (ohne systemd)
+
+Details und Prioritäten: docs\FEHLERANALYSE.txt
+Technischer Status:      docs\PROJEKTSTATUS.txt
+Änderungen:              docs\CHANGELOG.txt
+Build:                   logs\build_log.txt  und  docs\build_log.txt
+Tests:                   docs\test_report.txt
+
+
+6. HERKUNFT DER QUELLEN
+--------------------------------------------------------------------------------
+Kopiert von:
+  I:\NOVA USB DEMO STICK\system\nova\goldgabel\destiny\
+
+Zusätzlich im Emulator-Ordner gefunden:
+  I:\Offline Survival System Emulator\create_destiny_structure.ps1
+
+Kein Eigentumsanspruch an Drittkomponenten (Kernel, NOVA-Recovery, Modelle).
+Destiny-OS-Dateien in diesem Ordner: Christian Schmitt.
+
+
+7. PRÜFUNG FÜR CHRISTIAN
+--------------------------------------------------------------------------------
+Bitte diese Datei plus docs\ und tools\live_check.py Reviewen.
+Nach dem Review:
+
+  python tools\live_check.py
+  git -C "I:\Offline Survival System Emulator\DESTINY-OS_PROD" log -1
+
+GitHub nicht mit dem Platzhalter-Remote pushen.
+
+================================================================================
+ENDE PROJEKT_DOKUMENTATION
+================================================================================

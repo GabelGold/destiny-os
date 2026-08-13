@@ -1,0 +1,136 @@
+DESTINY OS – FEHLERANALYSE
+==========================
+Stand: 13. August 2026
+Quelle: statische Code-Review aller Dateien in src/ plus Installer-Skripte
+
+Legende
+  P0  bricht Start / Daten / Sicherheit
+  P1  Feature tot oder nur auf altem Linux-Pfad nutzbar
+  P2  Qualität / Betrieb / Aufräumen
+
+
+P0 – KRITISCH
+-------------
+ID    Datei                         Problem
+P0-1  destiny_commander.py          Hardcodierter Pfad
+                                    /media/christians/EprimoSpeicher/Projektmappe/destiny_system
+                                    Commander-Inbox und Log existieren auf I: nicht.
+                                    Fix: BASE_DIR = Path(__file__).resolve().parent
+
+P0-2  destiny_advisor.py            Hardcodiert /home/christians/destiny_system/monitor.log
+                                    Advisor schreibt ins Leere oder crasht nicht,
+                                    liefert aber nie Beratung.
+
+P0-3  destiny_updater.py            Endlos-git-pull auf denselben alten Linux-Pfad.
+                                    Auf Windows wirkungslos; auf Linux potenziell
+                                    ungewollte Remote-Änderungen.
+
+P0-4  destiny_update_engine.py      pip-Install mit hardcodiertem venv-Pfad + --break-system-packages.
+                                    Kann System-Python beschädigen, wenn der Pfad je existiert.
+
+P0-5  destiny_watchdog.py           Restartet destiny_gui/core/monitor alle 15 Minuten
+                                    ohne Health-Check. Kann laufende Sessions killen.
+
+P0-6  destiny_backup_agent.py       shutil.copytree ohne Retention. Alle 30 Minuten
+                                    volles Archiv. Platte läuft voll.
+
+P0-7  destiny_manager.py            rief archiver.ping() / archiver.repair() auf –
+                                    Methoden fehlten. BEHOBEN am 13.08.2026
+                                    (ping/repair in destiny_archiver.py ergänzt).
+
+
+P1 – HOCH
+---------
+ID    Datei                         Problem
+P1-1  Mehrere Module                Import-Seiteneffekte: Commander, Updater, Voice,
+                                    Watchdog, Update-Engine starteten Endlosschleifen
+                                    schon beim Import. BEHOBEN: if __name__ == "__main__"
+
+P1-2  destiny_power_center.py       sudo systemctl – auf Windows (Laufwerk I:) tot.
+                                    GUI-Button „Modul aktivieren“ täuscht Erfolg vor.
+
+P1-3  destiny_gui.py                Module Projektverwaltung, Live Monitoring,
+                                    Sprachsteuerung sind reine Info-Stubs.
+                                    Sidebar-Suche speichert nichts (anders als Tutorial).
+
+P1-4  destiny_voice.py              pyttsx3-Schleife alle 10 Minuten. Kein Command-Loop.
+                                    Keine Fehlerbehandlung außer bare except.
+
+P1-5  voice_commander.py            Google-SpeechRecognize – nicht offline.
+                                    Ohne SpeechRecognition nur Dummy-Print.
+
+P1-6  destiny_web_panel.py          Zweite, abgespeckte Streamlit-App, überlappt GUI.
+
+P1-7  Zwei Archiver                 DestinyChatSorterPro (destiny_archiver.py) und
+                                    DestinyArchiverCore (destiny_setup.py) schreiben
+                                    unterschiedliche Meta-Formate in dasselbe Archiv.
+
+P1-8  autoinstall.sh                Pfad /media/christians/EprimoSpeicher/... fest verdrahtet.
+                                    User hardcodiert "christians".
+
+P1-9  install_destiny_all.sh        Besser (nutzt logname + ~/destiny_system), erwartet
+                                    aber bereits existierendes venv. destiny_session_listener.py
+                                    als Service hat keinen Daemon-Loop – Prozess endet sofort.
+
+P1-10 iso/                          Leer. Kein bootfähiges Destiny-ISO vorhanden.
+
+
+P2 – MITTEL / AUFRÄUMEN
+-----------------------
+ID    Thema                         Problem
+P2-1  destiny_core.py               Klasse ohne CLI/Service-Entrypoint. autoinstall.sh
+                                    startet genau diese Datei – Service würde sofort enden
+                                    (install_destiny_all.sh startet korrekt destiny_manager.py).
+
+P2-2  destiny_event_engine.py       Heartbeat-Schleife, nie verdrahtet.
+
+P2-3  destiny_evolver.py            Zufalls-Mutation, keine Persistenz.
+
+P2-4  destiny_sync.py               Schreibt nur sync.log, keine echte Sync-Logik.
+
+P2-5  destiny_monitor.py            disk_usage("/") – auf Windows falsch.
+
+P2-6  datetime.utcnow()             deprecated in Python 3.12+ (manager, provisioner, tutorial).
+
+P2-7  Keine Tests                   test_report.txt basiert auf Live-Check, nicht pytest.
+
+P2-8  GitHub-Remote                 https://github.com/deinname/destiny-os ist Platzhalter.
+                                    Kein Push.
+
+P2-9  LICENSE-Konflikt              GoldGabel-Stick ist kommerziell lizenziert.
+                                    DESTINY-OS_PROD nutzt eine eigene Proprietär-Lizenz
+                                    für Christians Quellcode, ohne NOVA-Kernel zu beanspruchen.
+
+
+ROADMAP ZUR BEHEBUNG
+--------------------
+Sprint A – Portabilität (Windows + I:)
+  [ ] Gemeinsames destiny_paths.py: ROOT, ARCHIVE, BACKUP, LOGS relativ zu src/
+  [ ] Alle hardcodierten Linux-Pfade ersetzen
+  [ ] Monitor: aktuelles Laufwerk statt "/"
+  [ ] Power Center: Windows-No-Op oder NSSM/Task-Scheduler statt systemctl
+
+Sprint B – Services
+  [ ] Session-Listener als echter Daemon oder aus dem Installer nehmen
+  [ ] Watchdog nur bei fehlgeschlagenem Health-Check neu starten
+  [ ] Backup: Rotation (max. N Kopien) + eine laufende Kopie
+  [ ] Updater: nur explizit, nie stiller git pull
+
+Sprint C – GUI / eine Oberfläche
+  [ ] Eine UI wählen (Streamlit ODER Flask), die andere als Redirect
+  [ ] Einen Archiver als kanonisch markieren
+  [ ] Tutorial-Suche in destiny_gui verdrahten
+  [ ] Projektverwaltung auf destiny_archive lesen/schreiben
+
+Sprint D – Qualität
+  [ ] pytest für Archiver, Sorter, Layer, Manager
+  [ ] live_check.py in CI / vor jedem Commit
+  [ ] Echten GitHub-Remote setzen
+  [ ] Optional: ISO-Build-Skript – nur wenn wirklich ein Live-System gebaut wird
+
+
+SOFORT BEHOBEN AM 13.08.2026
+----------------------------
+- dest_archiver.ping() / repair() ergänzt
+- Import-Guards in commander, updater, voice, watchdog, update_engine
+- Live-Check-Tool, Dokumentation, Vite-Landingpage, Git-Grundlage
