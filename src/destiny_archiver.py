@@ -102,6 +102,54 @@ class DestinyChatSorterPro:
         self.script_sorter = DestinyScriptSorter(base_dir=self.base_dir / "scripts")
         return True
 
+    def create_project(self, name: str) -> Path:
+        slug = re.sub(r"[^\w\-]+", "_", (name or "").strip()).strip("_") or "projekt"
+        path = self.base_dir / slug
+        path.mkdir(parents=True, exist_ok=True)
+        return path
+
+    def list_projects(self) -> List[Dict]:
+        skip = {"incoming", "scripts", "processed"}
+        projects = []
+        if not self.base_dir.exists():
+            return projects
+        for proj in sorted(self.base_dir.iterdir()):
+            if not proj.is_dir() or proj.name in skip:
+                continue
+            chats = len(list(proj.glob("chat_*.txt")))
+            code_dir = proj / "code"
+            scripts_dir = self.base_dir / "scripts" / proj.name
+            code_blocks = 0
+            if code_dir.exists():
+                code_blocks += sum(1 for p in code_dir.rglob("*") if p.is_file())
+            if scripts_dir.exists():
+                code_blocks += sum(1 for p in scripts_dir.rglob("script_*.txt") if p.is_file())
+            projects.append({"name": proj.name, "chats": chats, "code_blocks": code_blocks})
+        return projects
+
+    def stats(self) -> Dict:
+        projects = self.list_projects()
+        return {
+            "projects": len(projects),
+            "chats": sum(p["chats"] for p in projects),
+            "code_blocks": sum(p["code_blocks"] for p in projects),
+        }
+
+    def save_chat(self, text: str, source: str = "web", project_override: str = "") -> Dict:
+        """Flask-kompatible Hülle um store_chat (kanonischer Einstieg)."""
+        project = (project_override or "").strip() or None
+        path = self.store_chat(text, project=project, source=source)
+        return {
+            "project": project or path.parent.name,
+            "slug": path.parent.name,
+            "chat_file": str(path),
+            "code_blocks": self._extract_code_blocks(text).__len__(),
+        }
+
+
+# Kanonischer Archiver für Destiny OS: DestinyChatSorterPro.
+# Alle Oberflächen (GUI, Flask, Listener) sollen diese Klasse nutzen.
+
 
 def cli():
     sorter = DestinyChatSorterPro()
