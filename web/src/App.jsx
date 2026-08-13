@@ -1,17 +1,8 @@
 const modules = [
-  { name: "Chat-Archiv", detail: "Chats + Code-Blöcke unter destiny_archive" },
-  { name: "Streamlit GUI", detail: "Dashboard auf Port 8501" },
-  { name: "Flask Setup", detail: "Profil, Tools, Archiv auf Port 5000" },
-  { name: "Live-Check", detail: "tools/live_check.py – Struktur, Syntax, Hashes" },
-  { name: "8 Services", detail: "systemd unter Linux, auf Windows nicht aktiv" },
-  { name: "Memory Layer", detail: "SQLite-Notizspeicher destiny_memory.sqlite" },
-];
-
-const commands = [
-  "python tools\\live_check.py",
-  "python -m streamlit run src\\destiny_gui.py",
-  "python src\\destiny_setup.py",
-  "cd web && npm install && npm run dev",
+  { name: "Dashboard", detail: "Streamlit Haupt-GUI auf Port 8501" },
+  { name: "Admin", detail: "Flask Setup + Service-Status auf Port 5000" },
+  { name: "Archiv", detail: "Ein Archiver: DestinyChatSorterPro" },
+  { name: "Live-Check", detail: "tools/live_check.py" },
 ];
 
 export default function App() {
@@ -20,68 +11,52 @@ export default function App() {
       style={{
         minHeight: "100vh",
         margin: 0,
-        background: "#070b12",
-        color: "#f5f5f5",
+        background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)",
+        color: "#e5e7eb",
         fontFamily: "Segoe UI, system-ui, sans-serif",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
-      <header
-        style={{
-          padding: "28px 32px",
-          background: "#111827",
-          borderBottom: "1px solid #1f2937",
-        }}
-      >
-        <div style={{ fontSize: 28, fontWeight: 700 }}>Destiny OS</div>
-        <div style={{ color: "#9ca3af", marginTop: 6 }}>
-          Offline Survival System · v1.0.0 · Christian Schmitt · 13. August 2026
-        </div>
-      </header>
-
-      <main style={{ maxWidth: 1100, margin: "0 auto", padding: 32 }}>
-        <p style={{ fontSize: 18, lineHeight: 1.5, maxWidth: 720 }}>
-          Python-Schicht für Archiv, Setup und lokale Orchestrierung. Der
-          produktive Kern liegt unter{" "}
-          <code>I:\\Offline Survival System Emulator\\DESTINY-OS_PROD\\</code>
+      <main style={{ textAlign: "center", padding: 32, maxWidth: 720 }}>
+        <h1 style={{ fontSize: 48, marginBottom: 12 }}>Destiny OS</h1>
+        <p style={{ fontSize: 20, color: "#7dd3fc" }}>
+          KI-betriebenes Wissensmanagement — Praesentationsseite, kein zweites Backend
         </p>
-
+        <div style={{ marginTop: 32 }}>
+          <a href="http://localhost:8501" style={{ color: "#86efac", margin: "0 16px" }}>
+            Dashboard :8501
+          </a>
+          <a href="http://localhost:5000" style={{ color: "#86efac", margin: "0 16px" }}>
+            Admin :5000
+          </a>
+          <a href="http://localhost:5000/admin" style={{ color: "#86efac", margin: "0 16px" }}>
+            Service-Status
+          </a>
+        </div>
         <section
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: 16,
-            marginTop: 28,
+            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+            gap: 12,
+            marginTop: 36,
+            textAlign: "left",
           }}
         >
           {modules.map((item) => (
             <article
               key={item.name}
-              style={{
-                background: "#1f2937",
-                borderRadius: 12,
-                padding: "16px 18px",
-              }}
+              style={{ background: "#111827", borderRadius: 12, padding: 14 }}
             >
-              <h2 style={{ margin: "0 0 8px", fontSize: 18 }}>{item.name}</h2>
-              <p style={{ margin: 0, color: "#d1d5db" }}>{item.detail}</p>
+              <h2 style={{ margin: "0 0 6px", fontSize: 16 }}>{item.name}</h2>
+              <p style={{ margin: 0, color: "#9ca3af", fontSize: 14 }}>{item.detail}</p>
             </article>
           ))}
         </section>
-
-        <section style={{ marginTop: 36 }}>
-          <h2>Startbefehle</h2>
-          <pre
-            style={{
-              background: "#020617",
-              border: "1px solid #1f2937",
-              borderRadius: 12,
-              padding: 16,
-              overflowX: "auto",
-            }}
-          >
-            {commands.join("\n")}
-          </pre>
-        </section>
+        <p style={{ fontSize: 14, color: "#6b7280", marginTop: 28 }}>
+          v1.3.0 · Christian Schmitt · Landingpage ohne eigenes API
+        </p>
       </main>
     </div>
   );
