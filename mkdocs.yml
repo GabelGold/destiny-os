@@ -1,0 +1,36 @@
+site_name: Destiny OS Dokumentation
+site_description: Offline-Schicht fuer Chat-Archiv, Setup und lokale Services
+site_author: Christian Schmitt
+
+repo_name: GabelGold/destiny-os
+repo_url: https://github.com/GabelGold/destiny-os
+
+docs_dir: docs
+exclude_docs: |
+  README.md
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: green
+      accent: green
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - toc.follow
+
+nav:
+  - Home: index.md
+  - API:
+      - DestinyPaths: api/paths.md
+      - DestinyManager: api/manager.md
+      - DestinyServiceManager: api/services.md
+      - DestinyLayer: api/layer.md
+      - DestinyChatSorterPro: api/archiver.md
+  - Installation: installation.md
+  - Contributing: contributing.md
+  - Changelog: changelog.md
+
+plugins:
+  - search
