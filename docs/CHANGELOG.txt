@@ -1,6 +1,23 @@
 DESTINY OS – CHANGELOG
 ======================
 
+[1.1.0] – 2026-08-13 – Sprint A Portabilitaet
+---------------------------------------------
+Added
+  - src/destiny_paths.py (root/src/logs/archive/backup/runtime/disk_root)
+  - start_destiny_windows.bat
+  - Backup-Rotation (max. 5 Kopien)
+  - Live-Check: Pfad-Smoke, Backup-Rotate, Scan auf hardcodierte Linux-Pfade
+
+Changed
+  - Alle Service-Module nutzen DestinyPaths statt /home/christians oder /media/...
+  - destiny_monitor.py: disk_usage auf aktuellem Laufwerk (Windows) bzw. /
+  - destiny_watchdog.py: Restart nur nach fehlgeschlagenem Health-Check
+  - destiny_power_center.py: Windows startet Python-Prozesse, Linux bleibt bei systemctl
+  - destiny_updater.py: git pull nur wenn .git existiert, via git -C
+  - destiny_update_engine.py: pip ueber sys.executable -m pip
+  - autoinstall.sh / install_destiny_all.sh: Skriptverzeichnis, $HOME, venv-Anlage, src/
+
 [1.0.0] – 2026-08-13
 --------------------
 Projekt: Neuaufbau auf I:\Offline Survival System Emulator\DESTINY-OS_PROD

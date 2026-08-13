@@ -29,6 +29,7 @@ ISO_DIR = PROD_ROOT / "iso"
 EXPECTED_PY = [
     "destiny_advisor.py",
     "destiny_archiver.py",
+    "destiny_paths.py",
     "destiny_backup_agent.py",
     "destiny_commander.py",
     "destiny_core.py",
@@ -78,6 +79,7 @@ EXPECTED_ROOT = [
     "autoinstall.sh",
     "install_destiny_all.sh",
     "create_destiny_structure.ps1",
+    "start_destiny_windows.bat",
 ]
 
 HASH_TARGETS = [
@@ -88,6 +90,7 @@ HASH_TARGETS = [
 ]
 
 SAFE_IMPORTS = [
+    "destiny_paths",
     "destiny_core",
     "destiny_sorter",
     "destiny_archiver",
@@ -98,6 +101,12 @@ SAFE_IMPORTS = [
     "destiny_sync",
     "destiny_event_engine",
     "destiny_session_listener",
+    "destiny_backup_agent",
+    "destiny_watchdog",
+    "destiny_power_center",
+    "destiny_updater",
+    "destiny_update_engine",
+    "destiny_commander",
 ]
 
 SYSTEMD_SERVICES = [
@@ -171,6 +180,66 @@ def run_manager_smoke() -> dict:
             "health": health.get("status"),
             "issues": health.get("issues", []),
         }
+    except Exception as exc:
+        return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+
+
+FORBIDDEN_PATHS = (
+    "/home/christians",
+    "/media/christians",
+    "EprimoSpeicher",
+)
+
+
+def scan_hardcoded_paths() -> dict:
+    hits = []
+    scan_roots = [SRC_DIR, PROD_ROOT]
+    patterns = {".py", ".sh", ".bat", ".ps1"}
+    for root in scan_roots:
+        files = root.glob("*.py") if root == SRC_DIR else [
+            p for p in root.iterdir() if p.is_file() and p.suffix.lower() in patterns
+        ]
+        if root == SRC_DIR:
+            files = list(SRC_DIR.glob("*.py"))
+        for path in files:
+            if path.name in {"FEHLERANALYSE.txt", "PROJEKTSTATUS.txt"}:
+                continue
+            try:
+                text = path.read_text(encoding="utf-8", errors="replace")
+            except Exception:
+                continue
+            for needle in FORBIDDEN_PATHS:
+                if needle in text:
+                    hits.append({"file": str(path.relative_to(PROD_ROOT)), "needle": needle})
+    return {"ok": len(hits) == 0, "hits": hits}
+
+
+def run_paths_smoke() -> dict:
+    try:
+        from destiny_paths import DestinyPaths
+
+        DestinyPaths.ensure()
+        root = DestinyPaths.root()
+        disk = DestinyPaths.disk_root()
+        ok = root.exists() and bool(disk)
+        return {
+            "ok": ok,
+            "root": str(root),
+            "disk": disk,
+            "windows": DestinyPaths.is_windows(),
+            "has_git": DestinyPaths.has_git(),
+        }
+    except Exception as exc:
+        return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+
+
+def run_backup_rotate_smoke() -> dict:
+    try:
+        from destiny_backup_agent import rotate_backups
+        from destiny_paths import DestinyPaths
+
+        rotate_backups(DestinyPaths.backup(), 5)
+        return {"ok": True, "backup": str(DestinyPaths.backup())}
     except Exception as exc:
         return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
 
@@ -249,6 +318,9 @@ def main() -> int:
     report["checks"]["imports"] = imports
     report["checks"]["manager_smoke"] = run_manager_smoke()
     report["checks"]["layer_smoke"] = run_layer_smoke()
+    report["checks"]["paths_smoke"] = run_paths_smoke()
+    report["checks"]["backup_rotate"] = run_backup_rotate_smoke()
+    report["checks"]["hardcoded_paths"] = scan_hardcoded_paths()
     report["checks"]["systemd_services_documented"] = SYSTEMD_SERVICES
 
     hashes = {}
@@ -278,6 +350,12 @@ def main() -> int:
         failures.append({"group": "manager_smoke", **report["checks"]["manager_smoke"]})
     if not report["checks"]["layer_smoke"]["ok"]:
         failures.append({"group": "layer_smoke", **report["checks"]["layer_smoke"]})
+    if not report["checks"]["paths_smoke"]["ok"]:
+        failures.append({"group": "paths_smoke", **report["checks"]["paths_smoke"]})
+    if not report["checks"]["backup_rotate"]["ok"]:
+        failures.append({"group": "backup_rotate", **report["checks"]["backup_rotate"]})
+    if not report["checks"]["hardcoded_paths"]["ok"]:
+        failures.append({"group": "hardcoded_paths", **report["checks"]["hardcoded_paths"]})
 
     finished = datetime.now(timezone.utc)
     report["finished_utc"] = finished.isoformat()

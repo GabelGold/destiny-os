@@ -32,8 +32,8 @@ Tutorial-Hilfe                     FUNKTIONIERT    tutorial_memory.json, TTS opt
 Backup-Agent                       TEILWEISE       30-Min-Kopie, keine Rotation
 Monitor                            TEILWEISE       braucht psutil, Linux-Disk "/"
 Voice Commander                    STUB            Dummy ohne SpeechRecognition
-Power Center                       LINUX-ONLY      systemctl/sudo
-systemd-Installer                  LINUX-ONLY      autoinstall.sh + install_destiny_all.sh
+Power Center                       PORTABEL        Windows: Prozessstart, Linux: systemctl
+systemd-Installer                  LINUX           autoinstall.sh + install_destiny_all.sh (portable Pfade)
 ISO / Bootimage                    LEER            iso/ ist Platzhalter
 Web-Landingpage (React/Vite)       VORBEREITET     web/ – Marketing/Übersicht, kein Backend
 Live-Check                         NEU             tools/live_check.py
@@ -53,9 +53,8 @@ Windows-Autostart                  FEHLT           Services sind systemd-zentrie
 
 4. WAS NICHT FUNKTIONIERT / NICHT PORTIERT IST
 ----------------------------------------------
-- Hardcodierte Linux-Pfade in mehreren Dateien
-  (/home/christians/..., /media/christians/EprimoSpeicher/...)
-- systemd-Services auf Windows (I: ist ein USB-/Datenlaufwerk)
+- systemd-Services auf Windows (I: ist ein USB-/Datenlaufwerk);
+  Ersatz: start_destiny_windows.bat
 - Voice-TTS-Schleife ohne Mikrofon/Engine-Setup
 - Watchdog startet Services alle 15 Minuten blind neu
 - Updater macht Endlos-git-pull auf alten Pfad

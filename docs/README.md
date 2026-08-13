@@ -37,6 +37,9 @@ python tools\live_check.py
 ## Wichtige Befehle
 
 ```powershell
+# Windows: Core + GUI + Monitor
+.\start_destiny_windows.bat
+
 # Streamlit-GUI (Port 8501)
 python -m streamlit run src\destiny_gui.py
 

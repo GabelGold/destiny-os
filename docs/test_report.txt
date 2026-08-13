@@ -1,61 +1,34 @@
 DESTINY OS – TESTREPORT
 =======================
-Datum:     13. August 2026
+Datum:     13. August 2026 (Sprint A)
 Host:      Windows, Python 3.11.15
 Werkzeug:  tools/live_check.py
 Ergebnis:  BESTANDEN (Exit 0)
 
 1. STRUKTUR
 -----------
-  src/     OK   24 .py Dateien (Soll 25+ inkl. Erwartung 24 Kernmodule; gefunden 24)
+  src/     OK   25 .py Dateien (inkl. destiny_paths.py)
   docs/    OK   6 Dokumente
-  web/     OK   5 Dateien (package.json, index.html, vite.config.js, main.jsx, App.jsx)
+  web/     OK   5 Kern-Dateien
   tools/   OK   live_check.py
-  logs/    OK
-  iso/     OK   (leer, erwartet)
+  Root     OK   start_destiny_windows.bat vorhanden
 
-2. SYNTAX (ast.parse aller src/*.py)
-------------------------------------
-  24/24 bestanden
+2. SYNTAX / IMPORTS
+-------------------
+  25/25 ast.parse bestanden
+  SAFE_IMPORTS inkl. destiny_paths, backup, watchdog, power_center, updater: OK
 
-3. IMPORT-SMOKE
----------------
-  destiny_core              BESTANDEN
-  destiny_sorter            BESTANDEN
-  destiny_archiver          BESTANDEN
-  destiny_provisioner       BESTANDEN
-  destiny_manager           BESTANDEN
-  destiny_layer             BESTANDEN
-  destiny_evolver           BESTANDEN
-  destiny_sync              BESTANDEN
-  destiny_event_engine      BESTANDEN
-  destiny_session_listener  BESTANDEN
+3. SMOKE
+--------
+  DestinyPaths.root()           I:\Offline Survival System Emulator\DESTINY-OS_PROD
+  DestinyPaths.disk_root()      I:\
+  rotate_backups(..., 5)        OK
+  Manager.initialize/health     OK
+  Layer SQLite                  OK
+  Hardcoded-Path-Scan src+sh    keine Treffer (/home/christians, /media/christians)
 
-4. FUNKTIONS-SMOKE
-------------------
-  DestinyManager.initialize()   BESTANDEN  (system=initialized)
-  DestinyManager.health_check() BESTANDEN  (status=healthy)
-  DestinyLayer.stats()          BESTANDEN  (SQLite lesbar)
-
-5. NICHT GETESTET
+4. NICHT GETESTET
 -----------------
-  Streamlit-GUI im Browser
-  Flask-Dashboard im Browser
-  systemd-Services (kein Linux)
-  SpeechRecognition / Mikrofon
-  Backup-Zyklus über 30 Minuten
-  Streamlit/Flask im echten Browser (kein Browser-MCP in dieser Session)
-  systemd-Services (kein Linux)
-
-  Zusaetzlich bestanden:
-  npm install + vite build in web/  (63 Pakete, Exit 0, 1.00s)
-
-6. SHA256 ZUM TESTZEITPUNKT
----------------------------
-  src/destiny_core.py              b9c37fd37535bc6c942ac26ffcc0188c4f217880af7647705abc2a4863d5bb1f
-  src/destiny_gui.py               63dfccf7600dfb5933715e550ed4637f94010b9a39aae65b74f282202f179fb9
-  src/destiny_manager.py           703b73eaffd1cc640a54f18cdcb419e5a74c86bd767bc308e0fdb84274195d3a
-  PROJEKT_DOKUMENTATION.txt        375c98d7f0671c56eafc75d81ab20c7118298e36a013790325ab6664d1558e92
-
-Rohreport: logs/live_check_report.json
-Kurzreport: logs/live_check_report.txt
+  Streamlit/Flask im Browser
+  systemd unter Linux
+  start_destiny_windows.bat als laufender Multi-Prozess-Test

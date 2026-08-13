@@ -38,4 +38,14 @@ WARNUNGEN (nicht blockierend)
 [2026-08-13 20:04:10] OK     npm install + vite build in web/ (63 Pakete, Exit 0)
 [2026-08-13 20:04:10] OK     web/dist erzeugt, nicht versioniert (gitignore)
 
-ENDE: Neuaufbau abgeschlossen, Live-Check gruen, Vite-Build gruen.
+[2026-08-13 21:00:00] START Sprint A Portabilitaet
+[2026-08-13 21:00:10] OK     src/destiny_paths.py
+[2026-08-13 21:01:00] OK     Hardcodierte Linux-Pfade entfernt (src + sh)
+[2026-08-13 21:01:20] OK     Backup-Rotation max 5
+[2026-08-13 21:01:30] OK     Watchdog nur bei Health-Fehler
+[2026-08-13 21:01:40] OK     Power Center Windows-Prozessstart
+[2026-08-13 21:01:50] OK     start_destiny_windows.bat
+[2026-08-13 21:02:00] TEST   live_check + rotate_backups + DestinyPaths.root
+[2026-08-13 21:02:00] OK     Live-Check Exit 0, 25 py, keine Eprimo-/christians-Pfade
+
+ENDE Sprint A.
