@@ -32,6 +32,7 @@ nav:
   - Installation: installation.md
   - Contributing: contributing.md
   - Changelog: changelog.md
+  - Projektabschluss: project-final-status.md
 
 plugins:
   - search

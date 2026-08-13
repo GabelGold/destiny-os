@@ -8,7 +8,9 @@
 Offline-Schicht für Chat-Archiv, Setup und lokale Services.  
 Entwickler: Christian Schmitt · Stand: 13. August 2026 · Version **1.4.0**
 
-Kurzanleitung: [docs/README.md](docs/README.md) · Review: [PROJEKT_DOKUMENTATION.txt](PROJEKT_DOKUMENTATION.txt) · API: [docs/index.md](docs/index.md)
+Kurzanleitung: [docs/README.md](docs/README.md) · Review: [PROJEKT_DOKUMENTATION.txt](PROJEKT_DOKUMENTATION.txt) · Abschluss: [docs/PROJECT_FINAL_STATUS.txt](docs/PROJECT_FINAL_STATUS.txt) · API: [docs/index.md](docs/index.md)
+
+Release: [v1.4.0](https://github.com/GabelGold/destiny-os/releases/tag/v1.4.0)
 
 ```powershell
 python tools\live_check.py

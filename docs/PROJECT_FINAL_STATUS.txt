@@ -1,0 +1,52 @@
+======================================================
+DESTINY OS 1.4.0 – PROJEKTABSCHLUSS & STATUSREPORT
+======================================================
+DATUM: 2026-08-13
+STATUS: AUSGELIEFERT (Release v1.4.0)
+REPO:  https://github.com/GabelGold/destiny-os
+TAG:   https://github.com/GabelGold/destiny-os/releases/tag/v1.4.0
+
+=== 1. WAS BEREITS FERTIG IST ===
+- GitHub Release v1.4.0 geprueft (HTTP 200).
+  Assets:
+    * hashes.txt
+    * Abschlussbericht_Destiny_OS.pdf (10 Seiten, ReportLab)
+    * nova_owner.iso (11,4 MB, Owner-Kernel vom Stick)
+    * kernel.elf (39 KB)
+- Abschlussbericht liegt lokal unter docs/Abschlussbericht_Destiny_OS.pdf
+- Build-Skript: build_iso.sh (Toolchain + Makefile, kein Fake-Image)
+- MkDocs-Quellen und Workflow: .github/workflows/docs.yml
+- Tests: 22 pytest bestanden; live_check Exit 0 (Sprint D)
+- Lizenz: proprietär (LICENSE) – kein MIT, kein "Public Domain"
+
+=== 2. WAS NOCH OFFEN / GEPRUEFT IST ===
+A) tFG-ISO (quantum_kernel_tFG.iso)
+   Suche auf I:, D:, E: und C:\Users\cschm:
+   - Bisher NICHT gefunden (kein quantum_kernel_tFG.iso, kein CHANGELOG_tFG.txt).
+   - Ohne Datei: kein Pre-Release v0.2.0-tFG.
+   - Wenn die ISO woanders liegt: Pfad schicken, dann als Pre-Release anhaengen.
+
+B) GitHub Pages
+   - https://gabelgold.github.io/destiny-os/ antwortet aktuell 404.
+   - Workflow docs.yml ist gepusht; Quelle in Settings → Pages auf
+     Branch "gh-pages" / / (root) stellen, falls der Workflow die Branch
+     schon angelegt hat.
+
+C) Dokumentation
+   - MkDocs-Nav nutzt docs/*.md (index, API, Installation).
+   - PROJEKTSTATUS.txt / FEHLERANALYSE.txt bleiben .txt (kein stilles Umbenennen).
+   - Diese Datei: docs/PROJECT_FINAL_STATUS.txt
+
+D) Wartung
+   - Kein aktiver Support zugesagt.
+   - Repo bleibt unter GabelGold/destiny-os als Archiv + Release v1.4.0.
+
+=== 3. NÄCHSTE SCHRITTE (PRIORITÄT) ===
+1. tFG-ISO nur hochladen, wenn die Datei wirklich existiert.
+2. GitHub Pages: gh-pages aktivieren, bis die URL nicht mehr 404 ist.
+3. Diese Datei liegt in docs/ und ist im Repo verlinkt.
+
+======================================================
+PROJEKTLEITUNG: Christian Schmitt (GabelGold)
+PROJEKT: Destiny OS 1.4.0 (Python-Schicht; kein tFG-Kernel-Release)
+======================================================
