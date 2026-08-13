@@ -1,0 +1,72 @@
+DESTINY OS – BUILD LOG
+======================
+Host: Windows / PowerShell
+Ziel: I:\Offline Survival System Emulator\DESTINY-OS_PROD
+
+[2026-08-13 19:59:13] START Neuaufbau DESTINY-OS_PROD
+[2026-08-13 19:59:13] OK     Laufwerk I: vorhanden
+[2026-08-13 19:59:13] INFO   Emulator-Root enthaelt keine .py-Quellen (nur Installer-Stubs)
+[2026-08-13 19:59:13] INFO   Echte Quellen gefunden unter
+                           I:\NOVA USB DEMO STICK\system\nova\goldgabel\destiny\
+[2026-08-13 19:59:14] OK     Ordner iso/, src/, docs/, tools/, logs/, web/ vorhanden
+[2026-08-13 19:59:14] OK     24 .py + tutorial_memory.json + destiny_memory.sqlite nach src/ kopiert
+[2026-08-13 19:59:14] OK     autoinstall.sh + install_destiny_all.sh nach Root kopiert
+[2026-08-13 20:00:00] FIX    destiny_archiver.py: ping() / repair() ergaenzt
+[2026-08-13 20:00:00] FIX    Import-Guards in commander, updater, voice, watchdog, update_engine
+[2026-08-13 20:01:00] OK     docs/ (6 Dateien) geschrieben
+[2026-08-13 20:02:00] OK     tools/live_check.py geschrieben
+[2026-08-13 20:02:30] OK     web/ Vite+React Landingpage geschrieben
+[2026-08-13 20:03:00] OK     PROJEKT_DOKUMENTATION.txt, LICENSE, requirements.txt, .gitignore
+[2026-08-13 20:03:21] TEST   python tools\live_check.py
+[2026-08-13 20:03:21] OK     Live-Check: ALLE PRUEFUNGEN BESTANDEN (24 py, 6 docs, 5 web)
+[2026-08-13 20:03:21] HASH   src/destiny_core.py
+                           b9c37fd37535bc6c942ac26ffcc0188c4f217880af7647705abc2a4863d5bb1f
+[2026-08-13 20:03:21] HASH   src/destiny_gui.py
+                           63dfccf7600dfb5933715e550ed4637f94010b9a39aae65b74f282202f179fb9
+[2026-08-13 20:03:21] HASH   src/destiny_manager.py
+                           703b73eaffd1cc640a54f18cdcb419e5a74c86bd767bc308e0fdb84274195d3a
+[2026-08-13 20:03:21] HASH   PROJEKT_DOKUMENTATION.txt
+                           375c98d7f0671c56eafc75d81ab20c7118298e36a013790325ab6664d1558e92
+[2026-08-13 20:03:21] SKIP   git push – Remote ist Platzhalter github.com/deinname/destiny-os
+[2026-08-13 20:03:21] SKIP   git config --global – lokale Identitaet, kein globales Ueberschreiben
+
+WARNUNGEN (nicht blockierend)
+  - iso/ leer
+  - Hardcodierte Linux-Pfade in mehreren Service-Skripten bleiben (dokumentiert)
+  - systemd auf diesem Windows-Host nicht pruefbar
+
+[2026-08-13 20:04:10] OK     npm install + vite build in web/ (63 Pakete, Exit 0)
+[2026-08-13 20:04:10] OK     web/dist erzeugt, nicht versioniert (gitignore)
+
+[2026-08-13 21:00:00] START Sprint A Portabilitaet
+[2026-08-13 21:00:10] OK     src/destiny_paths.py
+[2026-08-13 21:01:00] OK     Hardcodierte Linux-Pfade entfernt (src + sh)
+[2026-08-13 21:01:20] OK     Backup-Rotation max 5
+[2026-08-13 21:01:30] OK     Watchdog nur bei Health-Fehler
+[2026-08-13 21:01:40] OK     Power Center Windows-Prozessstart
+[2026-08-13 21:01:50] OK     start_destiny_windows.bat
+[2026-08-13 21:02:00] TEST   live_check + rotate_backups + DestinyPaths.root
+[2026-08-13 21:02:00] OK     Live-Check Exit 0, 25 py, keine Eprimo-/christians-Pfade
+
+[2026-08-13 21:08:00] START Sprint B Services
+[2026-08-13 21:08:30] OK     Session-Listener Daemon + incoming/
+[2026-08-13 21:08:40] OK     Updater nur --update/--status
+[2026-08-13 21:09:00] OK     Watchdog Limits + Service Manager
+[2026-08-13 21:09:20] OK     Power Center NSSM/schtasks, Commander HTTP
+[2026-08-13 21:09:40] OK     install_nssm_windows.ps1 (ohne Register)
+[2026-08-13 21:10:14] TEST   live_check Exit 0, 26 py
+
+[2026-08-13 21:16:00] START Sprint C GUI
+[2026-08-13 21:16:30] OK     destiny_gui Module + Tutorial-Suche
+[2026-08-13 21:16:50] OK     Archiver kanonisch, Flask /admin
+[2026-08-13 21:17:00] OK     web_panel entfernt, Landingpage
+[2026-08-13 21:17:08] TEST   live_check Exit 0
+[2026-08-13 21:18:20] TEST   Flask /admin 200, Streamlit 8501 200
+
+[2026-08-13 21:24:00] START Sprint D Qualitaet
+[2026-08-13 21:24:30] OK     tests/ 22 passed
+[2026-08-13 21:24:40] OK     CI + pre-commit + mkdocs + build_iso.sh
+[2026-08-13 21:25:56] TEST   live_check Exit 0
+[2026-08-13 21:26:30] INFO   Coverage gesamt 25% (keine 80%-Luege)
+
+ENDE Sprint D.

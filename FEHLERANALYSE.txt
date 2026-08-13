@@ -1,0 +1,121 @@
+DESTINY OS – FEHLERANALYSE
+==========================
+Stand: 13. August 2026
+Quelle: statische Code-Review aller Dateien in src/ plus Installer-Skripte
+
+Legende
+  P0  bricht Start / Daten / Sicherheit
+  P1  Feature tot oder nur auf altem Linux-Pfad nutzbar
+  P2  Qualität / Betrieb / Aufräumen
+
+
+P0 – KRITISCH
+-------------
+ID    Datei                         Problem
+P0-1  destiny_commander.py          BEHOBEN Sprint A: DestinyPaths.logs/inbox
+P0-2  destiny_advisor.py            BEHOBEN Sprint A: logs/monitor.log + advisor.log
+P0-3  destiny_updater.py            BEHOBEN Sprint A: git -C root, nur wenn .git existiert
+                                    (stilles Perioden-Pull bleibt Sprint-B-Thema)
+P0-4  destiny_update_engine.py      BEHOBEN Sprint A: sys.executable -m pip
+P0-5  destiny_watchdog.py           BEHOBEN Sprint A: Restart nur nach Health-Check-Fehler
+P0-6  destiny_backup_agent.py       BEHOBEN Sprint A: rotate_backups(max=5)
+P0-7  destiny_manager.py            BEHOBEN 13.08.2026: ping()/repair() + portable State-Datei
+
+
+P1 – HOCH
+---------
+ID    Datei                         Problem
+P1-1  Mehrere Module                Import-Seiteneffekte: Commander, Updater, Voice,
+                                    Watchdog, Update-Engine starteten Endlosschleifen
+                                    schon beim Import. BEHOBEN: if __name__ == "__main__"
+
+P1-2  destiny_power_center.py       BEHOBEN Sprint A: Windows startet lokale Prozesse,
+                                    Linux weiter systemctl. Persistente Tasks = Sprint B.
+
+P1-3  destiny_gui.py                Module Projektverwaltung, Live Monitoring,
+                                    Sprachsteuerung sind reine Info-Stubs.
+                                    Sidebar-Suche speichert nichts (anders als Tutorial).
+
+P1-4  destiny_voice.py              pyttsx3-Schleife alle 10 Minuten. Kein Command-Loop.
+                                    Keine Fehlerbehandlung außer bare except.
+
+P1-5  voice_commander.py            Google-SpeechRecognize – nicht offline.
+                                    Ohne SpeechRecognition nur Dummy-Print.
+
+P1-6  destiny_web_panel.py          BEHOBEN Sprint C: Datei entfernt.
+
+P1-7  Zwei Archiver                 BEHOBEN Sprint C: DestinyArchiverCore erbt
+                                    DestinyChatSorterPro (kanonisch).
+
+P1-8  autoinstall.sh                BEHOBEN Sprint A: SCRIPT_DIR / $HOME / .venv / src/
+
+P1-9  install_destiny_all.sh        BEHOBEN Sprint A/B: venv + src/. Listener ist Daemon.
+
+P1-10 iso/                          Leer. Kein bootfähiges Destiny-ISO vorhanden.
+
+
+P2 – MITTEL / AUFRÄUMEN
+-----------------------
+ID    Thema                         Problem
+P2-1  destiny_core.py               Klasse ohne CLI/Service-Entrypoint. autoinstall.sh
+                                    startet genau diese Datei – Service würde sofort enden
+                                    (install_destiny_all.sh startet korrekt destiny_manager.py).
+
+P2-2  destiny_event_engine.py       Heartbeat-Schleife, nie verdrahtet.
+
+P2-3  destiny_evolver.py            Zufalls-Mutation, keine Persistenz.
+
+P2-4  destiny_sync.py               Schreibt nur sync.log, keine echte Sync-Logik.
+
+P2-5  destiny_monitor.py            BEHOBEN Sprint A: DestinyPaths.disk_root()
+
+P2-6  datetime.utcnow()             deprecated in Python 3.12+ (manager, provisioner, tutorial).
+
+P2-7  Keine Tests                   test_report.txt basiert auf Live-Check, nicht pytest.
+
+P2-8  GitHub-Remote                 BEHOBEN: https://github.com/GabelGold/destiny-os
+
+P2-9  LICENSE-Konflikt              GoldGabel-Stick ist kommerziell lizenziert.
+                                    DESTINY-OS_PROD nutzt eine eigene Proprietär-Lizenz
+                                    für Christians Quellcode, ohne NOVA-Kernel zu beanspruchen.
+
+
+ROADMAP ZUR BEHEBUNG
+--------------------
+Sprint A – Portabilität (Windows + I:)
+  [x] Gemeinsames destiny_paths.py
+  [x] Alle hardcodierten Linux-Pfade ersetzen
+  [x] Monitor: aktuelles Laufwerk statt "/"
+  [x] Power Center: Windows-Prozessstart, Linux systemctl
+  [x] Backup-Rotation max. 5
+  [x] Watchdog nur bei Health-Fehler
+  [x] start_destiny_windows.bat
+
+Sprint B – Services
+  [x] Session-Listener als Daemon (incoming/ + File-Watcher)
+  [x] Watchdog: Health je Dienst, Restart-Limit, Backoff
+  [x] Backup: Rotation + latest/
+  [x] Updater nur explizit (--update)
+  [x] Service Manager start/stop/status/list
+  [x] Windows Persistenz: schtasks + NSSM (Installer, nicht still installiert)
+
+Sprint C – GUI / eine Oberfläche
+  [x] Streamlit Haupt-GUI, Flask Admin-Backend
+  [x] DestinyChatSorterPro kanonisch
+  [x] Tutorial-Suche in der Sidebar
+  [x] Projektverwaltung liest/schreibt destiny_archive
+  [x] Live Monitoring (psutil + Services)
+  [x] destiny_web_panel.py entfernt
+
+Sprint D – Qualität
+  [x] pytest für Archiver, Sorter, Layer, Manager, Paths
+  [x] live_check.py in GitHub Actions + Pre-Commit-Config
+  [x] GitHub-Remote GabelGold/destiny-os
+  [x] Optional: build_iso.sh (Skip ohne Kernel)
+
+
+SOFORT BEHOBEN AM 13.08.2026
+----------------------------
+- dest_archiver.ping() / repair() ergänzt
+- Import-Guards in commander, updater, voice, watchdog, update_engine
+- Live-Check-Tool, Dokumentation, Vite-Landingpage, Git-Grundlage

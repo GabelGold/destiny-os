@@ -1,0 +1,103 @@
+DESTINY OS – CHANGELOG
+======================
+
+[1.4.0] – 2026-08-13 – Sprint D Qualitaet
+-----------------------------------------
+Added
+  - pytest-Suite unter tests/ (paths, archiver, sorter, manager, layer, backup)
+  - GitHub Actions .github/workflows/ci.yml (3.10–3.12)
+  - .pre-commit-config.yaml (live_check)
+  - MkDocs-API unter docs/api/
+  - build_iso.sh (ohne Kernel: Skip)
+  - README-Badges (CI, Python, Proprietaer, 1.4.0)
+
+[1.3.0] – 2026-08-13 – Sprint C GUI
+-----------------------------------
+Added
+  - Projektverwaltung, Live Monitoring, Sprachsteuerung in destiny_gui.py
+  - Tutorial-Suche (search_help) in der Sidebar
+  - Flask /admin und /api/status
+  - React-Landingpage mit Links auf :8501 / :5000
+
+Changed
+  - DestinyChatSorterPro ist der kanonische Archiver
+  - DestinyArchiverCore ist nur noch eine Unterklasse
+  - Streamlit = Haupt-GUI, Flask = Admin-Backend
+
+Removed
+  - src/destiny_web_panel.py
+
+[1.2.0] – 2026-08-13 – Sprint B Services
+----------------------------------------
+Added
+  - Session-Listener-Daemon (watchdog-Observer, Polling-Fallback, incoming/)
+  - destiny_service_manager.py (start/stop/status/list, PID-Dateien)
+  - install_nssm_windows.ps1 (Download nach tools/nssm, -RegisterServices)
+  - Commander-HTTP auf 127.0.0.1:8765 (/health, /status, POST /command)
+  - Backup-Kopie destiny_backups/latest
+  - Power Center: Task Scheduler + NSSM-Hooks
+
+Changed
+  - Updater nur noch mit --update / --status, kein 30-Minuten-Loop
+  - Watchdog: Health je Dienst, max. 3 Restarts / 300s, Backoff
+  - DestinyManager.status() liefert Service-Snapshot
+
+[1.1.0] – 2026-08-13 – Sprint A Portabilitaet
+---------------------------------------------
+Added
+  - src/destiny_paths.py (root/src/logs/archive/backup/runtime/disk_root)
+  - start_destiny_windows.bat
+  - Backup-Rotation (max. 5 Kopien)
+  - Live-Check: Pfad-Smoke, Backup-Rotate, Scan auf hardcodierte Linux-Pfade
+
+Changed
+  - Alle Service-Module nutzen DestinyPaths statt /home/christians oder /media/...
+  - destiny_monitor.py: disk_usage auf aktuellem Laufwerk (Windows) bzw. /
+  - destiny_watchdog.py: Restart nur nach fehlgeschlagenem Health-Check
+  - destiny_power_center.py: Windows startet Python-Prozesse, Linux bleibt bei systemctl
+  - destiny_updater.py: git pull nur wenn .git existiert, via git -C
+  - destiny_update_engine.py: pip ueber sys.executable -m pip
+  - autoinstall.sh / install_destiny_all.sh: Skriptverzeichnis, $HOME, venv-Anlage, src/
+
+[1.0.0] – 2026-08-13
+--------------------
+Projekt: Neuaufbau auf I:\Offline Survival System Emulator\DESTINY-OS_PROD
+
+Added
+  - Ordnerstruktur iso/, src/, docs/, tools/, logs/, web/
+  - Vollständige Quellübernahme aus
+    I:\NOVA USB DEMO STICK\system\nova\goldgabel\destiny\
+  - tools/live_check.py (Struktur, Syntax, Imports, SHA256, Manager/Layer-Smoke)
+  - docs/PROJEKTSTATUS.txt, FEHLERANALYSE.txt, CHANGELOG.txt,
+    README.md, build_log.txt, test_report.txt
+  - PROJEKT_DOKUMENTATION.txt (Review-Dokument für Christian)
+  - React/Vite Landingpage in web/
+  - requirements.txt, LICENSE, .gitignore
+  - create_destiny_structure.ps1 (erneut ausführbarer Installer)
+
+Changed
+  - destiny_archiver.py: ping() und repair() für Manager.health_check()
+  - destiny_commander.py, destiny_updater.py, destiny_voice.py,
+    destiny_watchdog.py, destiny_update_engine.py:
+    Endlosschleifen nur noch unter if __name__ == "__main__"
+
+Known
+  - Hardcodierte Linux-Pfade unverändert (siehe FEHLERANALYSE)
+  - iso/ leer
+  - GitHub-Remote ist Platzhalter, kein Push
+
+
+[0.9.0] – 2026-08-06
+--------------------
+  - destiny_layer.py + destiny_memory.sqlite (GoldGabel-Stick Memory-API)
+
+
+[0.8.0] – 2025-12-08
+--------------------
+Ursprünglicher Destiny-Kern auf dem NOVA/GoldGabel-Stick:
+
+  - Streamlit-GUI, Flask-Setup-Commander
+  - Archiver + Script-Sorter + Tutorial-Memory
+  - Provisioner, Manager, Power Center, Backup-Agent, Monitor
+  - systemd-Installer (autoinstall.sh, install_destiny_all.sh)
+  - Stubs: Core, Evolver, Sync, Voice, Watchdog, Event-Engine
