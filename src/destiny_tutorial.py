@@ -186,6 +186,12 @@ def _speak_text(text: str) -> None:
 # ========== ÖFFENTLICHE FUNKTIONEN ==========================
 # ============================================================
 
+def search_help(query: str) -> list[dict]:
+    """Öffentliche Suche: speichert die Anfrage und liefert Treffer."""
+    _store_query(query)
+    return _search_help(query)
+
+
 def searchbox():
     """
     Zeigt in der Sidebar ein Suchfeld zur Tutorial-Hilfe.
