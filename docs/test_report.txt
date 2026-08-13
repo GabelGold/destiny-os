@@ -1,24 +1,25 @@
 DESTINY OS – TESTREPORT
 =======================
-Datum:     13. August 2026 (Sprint C)
+Datum:     13. August 2026 (Sprint D)
 Host:      Windows, Python 3.11.15
-Ergebnis:  BESTANDEN (Exit 0)
+Ergebnis:  pytest 22 passed, live_check Exit 0
 
-1. LIVE-CHECK
+1. PYTEST
+---------
+  22 Tests bestanden (paths, archiver, sorter, manager, layer, backup)
+  Gesamtabdeckung src/: 25%
+  Gezielte Module (ungefaehr): Layer 90%, Paths 78%, Sorter 74%, Archiver 72%, Manager 70%
+  Keine 80%-Gesamtcoverage – der Rest ist GUI/Services ohne Unit-Tests.
+
+2. LIVE-CHECK
 -------------
-  25 Python-Module (web_panel entfernt)
-  GUI-Module Projektverwaltung / Live Monitoring / Sprachsteuerung: vorhanden
-  DestinyArchiverCore erbt DestinyChatSorterPro
-  destiny_web_panel.py: geloescht
+  BESTANDEN, inkl. tests/, mkdocs.yml, build_iso.sh, pytest.ini
 
-2. HTTP-SMOKE (temporaer gestartet)
------------------------------------
-  Flask http://127.0.0.1:5000/admin     200, Service-Liste
-  Flask http://127.0.0.1:5000/api/status  JSON Snapshot
-  Streamlit http://127.0.0.1:8501       200
-  Service-Manager erkennt GUI als RUNNING (Port 8501)
+3. MKDOCS
+---------
+  Material-Theme, docs/README.md ausgeschlossen (Konflikt mit index.md)
 
-3. NICHT IM BROWSER DURCHGEKLICKT
----------------------------------
-  Kein Browser-MCP. Module wurden per Code + HTTP-Smoke geprueft.
-  Mikrofon-Listen wurde nicht live ausgefuehrt.
+4. CI
+-----
+  Workflow liegt unter .github/workflows/ci.yml
+  Läuft nach dem Push auf GitHub (Ubuntu 3.10–3.12)

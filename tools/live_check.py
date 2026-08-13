@@ -81,6 +81,9 @@ EXPECTED_ROOT = [
     "create_destiny_structure.ps1",
     "start_destiny_windows.bat",
     "install_nssm_windows.ps1",
+    "mkdocs.yml",
+    "build_iso.sh",
+    "pytest.ini",
 ]
 
 HASH_TARGETS = [
@@ -278,6 +281,15 @@ def run_listener_smoke() -> dict:
         return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
 
 
+def check_ci_environment() -> bool:
+    return os.environ.get("GITHUB_ACTIONS") == "true"
+
+
+def check_coverage() -> dict:
+    coverage_file = PROD_ROOT / "coverage.xml"
+    return {"ok": True, "required": False, "exists": coverage_file.exists()}
+
+
 def check_web_services() -> dict:
     import socket
 
@@ -375,6 +387,7 @@ def main() -> int:
         "logs": check_exists(LOGS_DIR, "dir"),
         "web": check_exists(WEB_DIR, "dir"),
         "iso": check_exists(ISO_DIR, "dir"),
+        "tests": check_exists(PROD_ROOT / "tests", "dir"),
     }
     report["checks"]["structure"] = structure
 
@@ -419,6 +432,8 @@ def main() -> int:
     report["checks"]["watchdog"] = run_watchdog_smoke()
     report["checks"]["gui_modules"] = test_gui_modules()
     report["checks"]["web_ports"] = check_web_services()
+    report["checks"]["ci_environment"] = {"ok": True, "github_actions": check_ci_environment()}
+    report["checks"]["coverage_file"] = check_coverage()
     report["checks"]["hardcoded_paths"] = scan_hardcoded_paths()
     report["checks"]["systemd_services_documented"] = SYSTEMD_SERVICES
 

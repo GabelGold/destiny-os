@@ -2,7 +2,7 @@
 PROJEKT_DOKUMENTATION – DESTINY OS
 ================================================================================
 PROJEKTNAME:     Destiny OS
-VERSION:         1.3.0
+VERSION:         1.4.0
 ENTWICKLER:      Christian Schmitt
 STAND:           13. August 2026
 LAUFWERK:        I:

@@ -108,10 +108,10 @@ Sprint C – GUI / eine Oberfläche
   [x] destiny_web_panel.py entfernt
 
 Sprint D – Qualität
-  [ ] pytest für Archiver, Sorter, Layer, Manager
-  [ ] live_check.py in CI / vor jedem Commit
+  [x] pytest für Archiver, Sorter, Layer, Manager, Paths
+  [x] live_check.py in GitHub Actions + Pre-Commit-Config
   [x] GitHub-Remote GabelGold/destiny-os
-  [ ] Optional: ISO-Build-Skript – nur wenn wirklich ein Live-System gebaut wird
+  [x] Optional: build_iso.sh (Skip ohne Kernel)
 
 
 SOFORT BEHOBEN AM 13.08.2026

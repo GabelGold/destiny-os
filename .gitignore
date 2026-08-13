@@ -23,3 +23,10 @@ logs/*.json
 .DS_Store
 Thumbs.db
 *.swp
+
+# Tests / docs build
+.coverage
+coverage.xml
+htmlcov/
+site/
+.pytest_cache/

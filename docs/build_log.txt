@@ -63,4 +63,10 @@ WARNUNGEN (nicht blockierend)
 [2026-08-13 21:17:08] TEST   live_check Exit 0
 [2026-08-13 21:18:20] TEST   Flask /admin 200, Streamlit 8501 200
 
-ENDE Sprint C.
+[2026-08-13 21:24:00] START Sprint D Qualitaet
+[2026-08-13 21:24:30] OK     tests/ 22 passed
+[2026-08-13 21:24:40] OK     CI + pre-commit + mkdocs + build_iso.sh
+[2026-08-13 21:25:56] TEST   live_check Exit 0
+[2026-08-13 21:26:30] INFO   Coverage gesamt 25% (keine 80%-Luege)
+
+ENDE Sprint D.
