@@ -53,6 +53,18 @@ class DestinyPaths:
         return DestinyPaths.runtime() / "commander_in.txt"
 
     @staticmethod
+    def incoming() -> Path:
+        return DestinyPaths.archive() / "incoming"
+
+    @staticmethod
+    def pid_dir() -> Path:
+        return DestinyPaths.runtime() / "services"
+
+    @staticmethod
+    def commander_port() -> int:
+        return 8765
+
+    @staticmethod
     def python() -> str:
         return sys.executable
 
@@ -84,6 +96,8 @@ class DestinyPaths:
             DestinyPaths.archive(),
             DestinyPaths.backup(),
             DestinyPaths.state_dir(),
+            DestinyPaths.incoming(),
+            DestinyPaths.pid_dir(),
         ):
             path.mkdir(parents=True, exist_ok=True)
 
